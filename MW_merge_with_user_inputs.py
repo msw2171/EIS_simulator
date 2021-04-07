@@ -186,7 +186,7 @@ circuits_dict = {}
 
 el_impedance = []
 #take inputs and calculate Z for element type.
-for i in range(4):
+for i in range(n_elements):
     if element_types[i] == 'R':
               zi = Z_R(w_range, params[i])
     elif element_types[i] == 'C':
