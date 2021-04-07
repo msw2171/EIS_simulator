@@ -202,11 +202,24 @@ print(el_impedance)
 # w = np.logspace(.5,10,100)
 
 #Sample input - two equivalent electrodes and solution resistance
-E1 = el_impedance[0]
-E2 = el_impedance[1]
-E3 = el_impedance[2]
-E4 = el_impedance[3]
-elements = [E1,E2,E3,E4]
+if n_elements == 1:
+    E1 = el_impedance[0]
+    elements = [E1]
+elif n_elements == 2:
+    E1 = el_impedance[0]
+    E2 = el_impedance[1]
+    elements = [E1, E2]
+elif n_elements == 3:
+    E1 = el_impedance[0]
+    E2 = el_impedance[1]
+    E3 = el_impedance[2]
+    elements = [E1, E2, E3]
+else:
+    E1 = el_impedance[0]
+    E2 = el_impedance[1]
+    E3 = el_impedance[2]
+    E4 = el_impedance[3]
+    elements = [E1,E2,E3,E4]
 
 
 
