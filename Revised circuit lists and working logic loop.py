@@ -55,44 +55,45 @@ for i in range(1,n_elements+1):
       r = int(input("Please specify the resitance in Ohms: "))
       params.append(r)
   elif ith_element == 'C':
-      c = int(input("Please specify the capacitance in uF: "))
+      c = float(input("Please specify the capacitance in F: "))
       params.append(c)
   elif ith_element == 'CPE':
       ntrue = 0
-      q = int(input("Please specify the Q parameter: "))
+      q = float(input("Please specify the Q parameter in F: "))
       n = float(input("Please specify the ideality factor n between 0 and 1: "))
       while not ntrue: #ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
           if n >= 0 and n<=1:
               ntrue = 1
           else:
               print(str(n) + "is not between 0 and 1")
-      params.append((q,n))
+      params.append([q,n])
   else:
-    A = int(input("Please specify the area A in cm^2: "))
+    A = float(input("Please specify the area A in cm^2: "))
     D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s: "))
     D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s: "))
     c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
     c_R_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
     n_el = int(input("Please specify the number of electrons in the redox reaction: "))
-    params.append((A,D_O,D_R,c_O_bulk,c_R_bulk,n_el))
+    params.append([A,D_O,D_R,c_O_bulk,c_R_bulk,n_el])
 
 
-lo_hi = 0 #check that the frequency range is correctlye specified 
+lo_hi = 0 #check that the frequency range is correctlye specified
 while not lo_hi:
-    low_w = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? ")
-    high_w = float(input("What is the highest frequency (in Hz) that you'd like to simulate? ")
+    low_w = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? "))
+    high_w = float(input("What is the highest frequency (in Hz) that you'd like to simulate? "))
     if high_w > low_w:
          lo_hi = 1
     else:
          print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
-           
 
-w_range = np.logspace(low_w,high_w,1000) 
+
+w_range = np.logspace(low_w,high_w,5000)
 #####object element_types specifies the user defined elements, object params has the corresponding parameters in the same index############
 ###### For example if element_types[1] is a Warburg impedance, params[1] will be a tuple with (A, D_O, D_R, c_0_bulk, c_R_bulk, n_el)######
 
 
-
+print(element_types)
+print(params)
 
 
 
@@ -107,7 +108,7 @@ w_range = np.logspace(low_w,high_w,1000)
 #R is resistance
 
 def Z_R(w, R):
-    Re_Z = np.full(len(w), R)  
+    Re_Z = np.full(len(w), R)
     Im_Z = np.zeros(len(w))
     return Re_Z+Im_Z
 
@@ -121,7 +122,7 @@ def Z_R(w, R):
 
 def Z_C(w, C):
     Re_Z = np.zeros(len(w))
-    Im_Z = -1/(w*C)*1j 
+    Im_Z = -1/(w*C)*1j
     return Re_Z+Im_Z
 
 
@@ -132,9 +133,11 @@ def Z_C(w, C):
 #w is array of rotational frequencies
 #n is a number between 0 and 1 (Simplifies to an ideal capacitor when n=1)
 
-def Z_CPE(w, (Q, n)):
-    Re_Z = (1/(Q*w**n))*cm.cos(cm.pi*n/2)  
-    Im_Z = (-1/(Q*w**n))*cm.sin(cm.pi*n/2)*1j
+def Z_CPE(w, params):
+    Q = params[0]
+    n = params[1]
+    Re_Z = (1/(Q*(w**n)))*cm.cos(cm.pi*n/2)
+    Im_Z = (-1/(Q*(w**n)))*cm.sin(cm.pi*n/2)*1j
     return Re_Z+Im_Z
 
 
@@ -147,7 +150,13 @@ def Z_CPE(w, (Q, n)):
 #D_O and D_R are diffusion coefficients for oxidized and reduced species
 #c_O_bulk and c_R_bulk are bulk concentrations for oxidized and reduced species
 
-def Z_W(w, (A, D_O, D_R, c_O_bulk, c_R_bulk, n)):
+def Z_W(w, params):
+    A = params[0]
+    D_O = params[1]
+    D_R = params[2]
+    c_O_bulk = params[3]
+    c_R_bulk = params[4]
+    n = params[5]
     R = 8.314 #J/K•mol
     F = 96485 #C/mol
     T = 298 #K
@@ -158,16 +167,16 @@ def Z_W(w, (A, D_O, D_R, c_O_bulk, c_R_bulk, n)):
 
 
 # ## Converting Input String to Circuit Array
-# 
+#
 # - Read the user input string using the user friendly format of para()
 # - Each possible user input is tied to a preset array using a code friendly format
 # - The array is filled with impedance arrays that draw directly from the separately inputed values of E_i
-# 
+#
 # Rules for user input:
 # - The elements should follow numerical order (don't write E2 + E1, write E1 + E2)
 # - Only use parenthesis to surround elements in parallel
 # - Within para(), the comma separates the parallel elements, taking precedence over other notation like+
-# 
+#
 
 # In[6]:
 
@@ -175,31 +184,29 @@ def Z_W(w, (A, D_O, D_R, c_O_bulk, c_R_bulk, n)):
 #Input/circuit dictionary
 circuits_dict = {}
 
-elements = []                   
+el_impedance = []
 #take inputs and calculate Z for element type.
 for i in range(4):
     if element_types[i] == 'R':
-              z_r = Z_R(w_range, params[i])
-              elements.append(z_r)
+              zi = Z_R(w_range, params[i])
     elif element_types[i] == 'C':
-               z_c = Z_C(w_range, params[i])
-               elements.append(z_c)
+               zi = Z_C(w_range, params[i])
+
     elif element_types[i] == 'CPE':
-               z_cpe = Z_CPE(w_range, params[i])
-               elements.append(z_cpe)
+               zi = Z_CPE(w_range, params[i])
     else:
-                z_w = Z_W(w_range, params[i])
-                elements.append(z_w)
-                   
+               zi = Z_W(w_range, params[i])
+    el_impedance.append(zi)
+print(el_impedance)
 #Sample frequency space
 # w = np.logspace(.5,10,100)
 
 #Sample input - two equivalent electrodes and solution resistance
-# E1 = Z_R(w,20)
-# E2 = Z_W(w, .2, 1e-5, 1.5e-5, 1, 2, 1)
-# E3 = Z_R(w,10)
-# E4 = Z_CPE(w,20e-6,0.8)
-# elements = [E1,E2,E3,E4]
+E1 = el_impedance[0]
+E2 = el_impedance[1]
+E3 = el_impedance[2]
+E4 = el_impedance[3]
+elements = [E1,E2,E3,E4]
 
 
 
@@ -233,10 +240,10 @@ circuits_3 = [[[E1,E2,E3]],
              [[E1,(E2,E3)]],
              [([E1,E2],E3)],
              [(E1,E2,E3)]]
-              
+
 for count, array in enumerate(circuits_3):
     circuits_dict["3_"+str(count+1)]=circuits_3[count]
-    
+
 
 
 # In[9]:
@@ -267,7 +274,7 @@ for count, array in enumerate(circuits_1):
 
 #Function for adding impedances in series
 def add_series_Z(elements):
-    return np.sum(elements,axis=0)    
+    return np.sum(elements,axis=0)
 
 
 # In[14]:
@@ -306,7 +313,7 @@ def calc_Z(input_circuit, config):
         return add_parallel_Z(dummy_circuit)
     elif config == "series":
         return add_series_Z(dummy_circuit)
-    
+
 
 
 # ## Testing the Code
@@ -315,24 +322,18 @@ def calc_Z(input_circuit, config):
 
 
 test_circuit = circuits_dict["4_10"]
-calc_Z(test_circuit, "circuit")
+#calc_Z(test_circuit, "circuit")
 
-test_plot = calc_Z(test_circuit, "series")
+test_plot = calc_Z(test_circuit, "parallel")
 
 fig = plt.figure()
 ax = fig.add_subplot(1, 1, 1)
 x = test_plot.real
 y = -test_plot.imag
 ax.scatter(x, y)
-#plt.xlim([0,.01])
-#plt.ylim([0,1])
 
 
 plt.show()
 
 
 # In[ ]:
-
-
-
-
