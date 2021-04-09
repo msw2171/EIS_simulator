@@ -1,3 +1,168 @@
+from tkinter import *
+from PIL import Image, ImageTk
+from functools import partial
+
+# pathway to image folder (note:change to your device path, if on Windows change backslashes to forward)
+
+imgfolder_4e="F:/Python images for EIS/4element/"
+imgfolder_3e="F:/Python images for EIS/3element/"
+imgfolder_2e="F:/Python images for EIS/2element/"
+imgfolder_1e="F:/Python images for EIS/1element/"
+
+# define dictionaries for storing images
+
+img_dict_4e={}
+img_dict_3e={}
+img_dict_2e={}
+img_dict_1e={}
+
+# for loops to fill process/resize images with Pillow and fill image Dictionaries
+for x in range(1,11):
+    full_img_path=imgfolder_4e + f'pic4_{x}.png'
+    img_processed = Image.open(full_img_path)
+    img_processed = img_processed.resize((145, 125), Image.ANTIALIAS)
+    img_dict_4e[f'img4_{x}']=img_processed
+for x in range(1,5):
+    full_img_path = imgfolder_3e + f'pic3_{x}.png'
+    img_processed = Image.open(full_img_path)
+    img_processed = img_processed.resize((145, 125), Image.ANTIALIAS)
+    img_dict_3e[f'img3_{x}'] = img_processed
+for x in range(1,3):
+    full_img_path = imgfolder_2e + f'pic2_{x}.png'
+    img_processed = Image.open(full_img_path)
+    img_processed = img_processed.resize((145, 125), Image.ANTIALIAS)
+    img_dict_2e[f'img2_{x}'] = img_processed
+for x in range(1,2):
+    full_img_path = imgfolder_1e + f'pic1_{x}.png'
+    img_processed = Image.open(full_img_path)
+    img_processed = img_processed.resize((145, 125), Image.ANTIALIAS)
+    img_dict_1e[f'img1_{x}'] = img_processed
+
+#Construct combined image dictionary out of seperate dictionaries
+
+master_img_dict={}
+for key in img_dict_4e:
+    master_img_dict[key]=img_dict_4e[key]
+for key in img_dict_3e:
+    master_img_dict[key]=img_dict_3e[key]
+for key in img_dict_2e:
+    master_img_dict[key]=img_dict_2e[key]
+for key in img_dict_1e:
+    master_img_dict[key]=img_dict_1e[key]
+
+#Establish default string variable for Circuit Choice
+chosen_circuit="None"
+
+#function to open picture/button window of 4 element choices
+
+def four_element_choice():
+    four_window = Tk()
+    four_window.geometry("1000x450")
+    four_window.title("Circuit configuration Options")
+    frame = LabelFrame(four_window, text="Choose from the possible circuit configurations.You will be able to specify the identity of each element afterwards:", padx=50, pady=50)
+    frame.pack()
+    def buttonpush(a):
+        global chosen_circuit
+        chosen_circuit=a
+        four_window.destroy()
+    b_img_dict={}
+    buttonnum=1
+    for key in img_dict_4e:
+        b_img_dict[key]= ImageTk.PhotoImage(img_dict_4e[key])
+    for key in b_img_dict:
+        if buttonnum<3:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=1, row=buttonnum, padx=10, pady=10)
+            buttonnum=buttonnum+1
+        elif buttonnum<5:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=2, row=buttonnum-2, padx=10, pady=10)
+            buttonnum = buttonnum + 1
+        elif buttonnum<7:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=3, row=buttonnum-4, padx=10, pady=10)
+            buttonnum = buttonnum + 1
+        elif buttonnum<9:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=4, row=buttonnum - 6, padx=10, pady=10)
+            buttonnum = buttonnum + 1
+        elif buttonnum<11:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=5, row=buttonnum - 8, padx=10, pady=10)
+            buttonnum = buttonnum + 1
+    four_window.mainloop()
+    return chosen_circuit
+
+# Function to open window for 3 element choices
+
+def three_element_choice():
+    three_window = Tk()
+    three_window.geometry("1000x450")
+    three_window.title("Circuit configuration Options")
+    frame = LabelFrame(three_window, text="Choose from the possible circuit configurations. You will be able to specify the identity of each element afterwards:", padx=50, pady=50)
+    frame.pack()
+    def buttonpush(a):
+        global chosen_circuit
+        chosen_circuit=a
+        three_window.destroy()
+    b_img_dict={}
+    buttonnum=1
+    for key in img_dict_3e:
+        b_img_dict[key]= ImageTk.PhotoImage(img_dict_3e[key])
+    for key in b_img_dict:
+        if buttonnum<3:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=1, row=buttonnum, padx=10, pady=10)
+            buttonnum=buttonnum+1
+        else:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=2, row=buttonnum-2, padx=10, pady=10)
+            buttonnum = buttonnum + 1
+
+    three_window.mainloop()
+    return chosen_circuit
+
+#Function to open window for 2 element choices
+
+def two_element_choice():
+    two_window = Tk()
+    two_window.geometry("1000x450")
+    two_window.title("Circuit configuration Options")
+    frame = LabelFrame(two_window, text="Choose from the possible circuit configurations. You will be able to specify the identity of each element afterwards:", padx=50, pady=50)
+    frame.pack()
+    def buttonpush(a):
+        global chosen_circuit
+        chosen_circuit=a
+        two_window.destroy()
+    b_img_dict={}
+    buttonnum=1
+    for key in img_dict_2e:
+        b_img_dict[key]= ImageTk.PhotoImage(img_dict_2e[key])
+    for key in b_img_dict:
+        if buttonnum<2:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=1, row=buttonnum, padx=10, pady=10)
+            buttonnum=buttonnum+1
+        else:
+            buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
+            buttontest.grid(column=2, row=buttonnum-1, padx=10, pady=10)
+            buttonnum = buttonnum + 1
+
+    two_window.mainloop()
+    return chosen_circuit
+
+#function to prompt user to enter number of circuit elements and return circuit element image key
+
+def determine_circuit_config(n):
+    if n==4:
+        return four_element_choice()
+    elif n==3:
+        return three_element_choice()
+    elif n==2:
+        return two_element_choice()
+    elif n==1:
+        return "img1_1"
+
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -29,15 +194,39 @@ print(30 * '-')
 ## Robust error handling ##
 ## only accept int 1-4   ##
 ###########################
+
 ## Wait for valid input in while...not ###
 is_valid=0
 #obtain number of elements user wishes to simulate. keep asking for a number until user inputs interger from 1-4
 while not is_valid:
-    n_elements = int(input('How many elements would you like to simulate? : '))
-    if n_elements >=1 and n_elements <= 4:
-      is_valid = 1 ## set it to 1 to validate input and to terminate the while..not loop
-    else:
-        print(str(n_elements) + " is not a valid integer. \n Please enter an interger value from 1-4")
+    n_elements_str=input('How many elements would you like to simulate? : ')
+    try:
+        n_elements = int(n_elements_str)
+        if n_elements >=1 and n_elements <= 4:
+            is_valid = 1 ## set it to 1 to validate input and to terminate the while..not loop
+        else:
+            print(str(n_elements) + " is not a valid integer. \n Please enter an integer value from 1-4")
+    except ValueError:
+        print(str(n_elements_str) + " is not a valid integer. \n Please enter an integer value from 1-4")
+        
+#Run user picture selection window to determine circuit congfig
+
+user_choice_img_key=determine_circuit_config(n_elements)
+
+#convert image dictionary key string to be used for circuits dictionary
+
+user_choice_circuits_key=user_choice_img_key.lstrip("img")
+
+#Open window with circuit reference picture to assist in element assignment
+user_choice_window = Tk()
+user_choice_window.geometry("500x450")
+user_choice_window.title("Simulated Circuit Configuration")
+frame = LabelFrame(user_choice_window, text="Below is your chosen circuit for reference as you specify element identities:", padx=50, pady=50)
+frame.pack()
+user_choice_img=master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
+user_choice_img=ImageTk.PhotoImage(user_choice_img)
+label=Label(frame, image=user_choice_img)
+label.pack()
 
 ### obtain type of elements and parameters
 element_types = []
@@ -72,7 +261,7 @@ for i in range(1,n_elements+1):
     D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s: "))
     D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s: "))
     c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
-    c_R_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
+    c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3: "))
     n_el = int(input("Please specify the number of electrons in the redox reaction: "))
     params.append([A,D_O,D_R,c_O_bulk,c_R_bulk,n_el])
 
@@ -85,6 +274,10 @@ while not lo_hi:
          lo_hi = 1
     else:
          print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
+            
+#Close window with circuit reference picture
+user_choice_window.destroy()
+user_choice_window.mainloop()
 
 
 w_range = np.logspace(low_w,high_w,5000)
@@ -238,7 +431,7 @@ else:
 circuits_4 = [[[E1,E2,E3,E4]],
               [[E1,E2,(E3,E4)]],
               [[E1,([E2,E3],E4)]],
-              [(E1,[E2,E3,E4])],
+              [(E4,[E2,E3,E1])],
               [([E1,E3],[E2,E4])],
               [[(E1,E2),(E3,E4)]],
               [([E1,(E2,E3)],E4)],
