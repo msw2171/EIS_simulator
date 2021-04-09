@@ -249,8 +249,8 @@ for i in range(1,n_elements+1):
   elif ith_element == 'CPE':
       ntrue = 0
       q = float(input("Please specify the Q parameter in F: "))
-      n = float(input("Please specify the ideality factor n between 0 and 1: "))
-      while not ntrue: #ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
+      while not ntrue: 
+          n = float(input("Please specify the ideality factor n between 0 and 1: "))#ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
           if n >= 0 and n<=1:
               ntrue = 1
           else:
