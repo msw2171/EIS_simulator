@@ -4,10 +4,10 @@ from functools import partial
 
 # pathway to image folder (note:change to your device path, if on Windows change backslashes to forward)
 
-imgfolder_4e= "Desktop\Python images for EIS\4element"
-imgfolder_3e="Desktop\Python images for EIS\3element"
-imgfolder_2e="Desktop\Python images for EIS\2element"
-imgfolder_1e="Desktop\Python images for EIS\1element"
+imgfolder_4e="C:/Users/Mateo Williams/Documents/Python images for EIS/4element/"
+imgfolder_3e="C:/Users/Mateo Williams/Documents/Python images for EIS/3element/"
+imgfolder_2e="C:/Users/Mateo Williams/Documents/Python images for EIS/2element/"
+imgfolder_1e="C:/Users/Mateo Williams/Documents/Python images for EIS/1element/"
 
 # define dictionaries for storing images
 
@@ -194,7 +194,7 @@ print(30 * '-')
 is_valid=0
 #obtain number of elements user wishes to simulate. keep asking for a number until user inputs interger from 1-4
 while not is_valid:
-    n_elements_str=int(input('How many elements would you like to simulate? : '))
+    n_elements=int(input('How many elements would you like to simulate? : '))
     try:
         if n_elements >=1 and n_elements <= 4:
             is_valid = 1 ## set it to 1 to validate input and to terminate the while..not loop
@@ -203,22 +203,22 @@ while not is_valid:
     except ValueError:
         print(str(n_elements_str) + " is not a valid integer. \n Please enter an integer value from 1-4")
 
-# #Run user picture selection window to determine circuit congfig
-#
-# user_choice_img_key=determine_circuit_config(n_elements)
-#
-# #convert image dictionary key string to be used for circuits dictionary
-#
-# user_choice_circuits_key=user_choice_img_key.lstrip("img")
-#
-# #Use Pillow to resize users chosen circuit image for reference display
-#
-# user_choice_img=master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
-#
-# #define variable to determine when user is done with data inputs to close reference picture window
-# user_inputs_done=False
-#
-# #Open window with circuit reference picture to assist in element assignment
+#Run user picture selection window to determine circuit congfig
+
+user_choice_img_key=determine_circuit_config(n_elements)
+
+#convert image dictionary key string to be used for circuits dictionary
+
+user_choice_circuits_key=user_choice_img_key.lstrip("img")
+
+#Use Pillow to resize users chosen circuit image for reference display
+
+user_choice_img=master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
+
+#define variable to determine when user is done with data inputs to close reference picture window
+user_inputs_done=False
+
+#Open window with circuit reference picture to assist in element assignment
 
 def open_reference_window():
     global user_inputs_done
@@ -243,10 +243,10 @@ def open_reference_window():
     while not user_inputs_done:
         reference_window.update()
 
-# #Import threading, create separate thread for pulling up circuit reference window, and start thread
-# import threading
-# thread_1=threading.Thread(target=open_reference_window)
-# thread_1.start()
+#Import threading, create separate thread for pulling up circuit reference window, and start thread
+import threading
+thread_1=threading.Thread(target=open_reference_window)
+thread_1.start()
 
 ### obtain type of elements and parameters
 element_types = []
@@ -288,8 +288,8 @@ for i in range(1,n_elements+1):
 
 lo_hi = 0 #check that the frequency range is correctly specified
 while not lo_hi:
-    low_w = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? "))
-    high_w = float(input("What is the highest frequency (in Hz) that you'd like to simulate? "))
+    low_w = float(input("What is the lowest order of magnitude frequency (power of 10) that you'd like to simulate? "))
+    high_w = float(input("What is the highes order of magnitude frequency (power of 10) that you'd like to simulate? "))
     if high_w > low_w:
          lo_hi = 1
     else:
@@ -299,7 +299,12 @@ while not lo_hi:
 user_inputs_done=True
 
 
-w_range = 2*np.pi*np.logspace(low_w,high_w,5000)
+w_input = np.logspace(low_w,high_w,num = 100)
+#print(w_input)
+w_range = []
+for w in w_input:
+    x = round(2*np.pi*w,4)
+    w_range.append(x)
 #####object element_types specifies the user defined elements, object params has the corresponding parameters in the same index############
 ###### For example if element_types[1] is a Warburg impedance, params[1] will be a tuple with (A, D_O, D_R, c_0_bulk, c_R_bulk, n_el)######
 
@@ -330,8 +335,9 @@ def Z_R(w, R):
 #C is capacitance
 
 def Z_C(w, C):
+    x = np.array(w)
     Re_Z = np.zeros(len(w))
-    Im_Z = -1/(w*C)*1j
+    Im_Z = -1/(x*C)*1j
     return Re_Z+Im_Z
 
 
@@ -343,10 +349,11 @@ def Z_C(w, C):
 #n is a number between 0 and 1 (Simplifies to an ideal capacitor when n=1)
 
 def Z_CPE(w, params):
+    x = np.array(w)
     Q = params[0]
     n = params[1]
-    Re_Z = (1/(Q*(w**n)))*cm.cos(cm.pi*n/2)
-    Im_Z = (-1/(Q*(w**n)))*cm.sin(cm.pi*n/2)*1j
+    Re_Z = (1/(Q*(x**n)))*cm.cos(cm.pi*n/2)
+    Im_Z = (-1/(Q*(x**n)))*cm.sin(cm.pi*n/2)*1j
     return Re_Z+Im_Z
 
 
@@ -360,6 +367,7 @@ def Z_CPE(w, params):
 #c_O_bulk and c_R_bulk are bulk concentrations for oxidized and reduced species
 
 def Z_W(w, params):
+    x = np.array(w)
     A = params[0]
     D_O = params[1]
     D_R = params[2]
@@ -370,8 +378,8 @@ def Z_W(w, params):
     F = 96485 #C/mol
     T = 298 #K
     sigma = (R*T/((n*F)**2*A*2**0.5)*((1/D_O**0.5/c_O_bulk)+(1/D_R**0.5/c_R_bulk)))
-    Re_Z = sigma/w**0.5
-    Im_Z = -sigma/w**0.5*1j
+    Re_Z = sigma/x**0.5
+    Im_Z = -sigma/x**0.5*1j
     return Re_Z+Im_Z
 
 
@@ -406,7 +414,7 @@ for i in range(n_elements):
     else:
                zi = Z_W(w_range, params[i])
     el_impedance.append(zi)
-print(el_impedance)
+#print(el_impedance)
 #Sample frequency space
 # w = np.logspace(.5,10,100)
 
@@ -544,48 +552,50 @@ def calc_Z(input_circuit, config):
 
 # ## Plotting the Nyquist Diagram
 
-import pandas as pd
-
-from bokeh.io import output_file, output_notebook
-from bokeh.plotting import figure, show
-from bokeh.models import ColumnDataSource, NumeralTickFormatter
-from bokeh.layouts import row, column, gridplot
-from bokeh.models.widgets import Tabs, Panel
-from bokeh.models import HoverTool
-
-#Output the graph as an HTML file:
-output_file("Nyquist.html")
-
-#Calculate the impedance from the user input
+# import pandas as pd
+#
+# from bokeh.io import output_file, output_notebook
+# from bokeh.plotting import figure, show
+# from bokeh.models import ColumnDataSource, NumeralTickFormatter
+# from bokeh.layouts import row, column, gridplot
+# from bokeh.models.widgets import Tabs, Panel
+# from bokeh.models import HoverTool
+#
+# #Output the graph as an HTML file:
+# output_file("Nyquist.html")
+#
+# #Calculate the impedance from the user input
 circuit = circuits_dict[user_choice_circuits_key]
 impedance_array = calc_Z(circuit, "series")
-nyquist_array = np.column_stack((impedance_array.real, impedance_array.imag, w))
-#Convert the data into a DataFrame
-df = pd.DataFrame(nyquist_array, columns = ["Real","Imag","Freq"])
-
-#Set bounds of the plot based on the max Z values
-x_lim = df["Real"].max() + (.1*df["Real"].max())
-y_lim = df["Imag"].max() + (.1*df["Imag"].max())
-
-#Create a ColumnDataSource object to handle the impedance df
-impedance_cds = ColumnDataSource(df)
-
-#Create the figure ()
-fig = figure(title="Nyquist Plot",plot_height=500,
-            plot_width=500, x_range=(0,x_lim), y_range=(0,y_lim),
-             x_axis_label= "Z' (\u03A9)", y_axis_label="-Z'' (\u03A9)",
-             tools="pan,wheel_zoom,box_zoom,reset",
-             toolbar_location="below")
-
-fig.circle("Real","Imag",color="#CE1141",source=impedance_cds)
-
-#add hover "tooltips"
-tooltips = [
-    ("Z' (\u03A9)","@Real"),
-    ("-Z'' (\u03A9)","@Imag"),
-    ("\u03C9	 (1/s)","@Freq")
-]
-
-fig.add_tools(HoverTool(tooltips=tooltips))
-
-show(fig)
+nyquist_array = np.column_stack((impedance_array.real, -impedance_array.imag, w_range))
+plt.figure()
+plt.scatter(impedance_array.real,-impedance_array.imag)
+# #Convert the data into a DataFrame
+# df = pd.DataFrame(nyquist_array, columns = ["Real","Imag","Freq"])
+#
+# #Set bounds of the plot based on the max Z values
+# x_lim = df["Real"].max() + (.1*df["Real"].max())
+# y_lim = df["Imag"].max() + (.1*df["Imag"].max())
+#
+# #Create a ColumnDataSource object to handle the impedance df
+# impedance_cds = ColumnDataSource(df)
+#
+# #Create the figure ()
+# fig = figure(title="Nyquist Plot",plot_height=500,
+#             plot_width=500, x_range=(0,x_lim), y_range=(0,y_lim),
+#              x_axis_label= "Z' (\u03A9)", y_axis_label="-Z'' (\u03A9)",
+#              tools="pan,wheel_zoom,box_zoom,reset",
+#              toolbar_location="below")
+#
+# fig.circle("Real","Imag",color="#CE1141",source=impedance_cds)
+#
+# #add hover "tooltips"
+# tooltips = [
+#     ("Z' (\u03A9)","@Real"),
+#     ("-Z'' (\u03A9)","@Imag"),
+#     ("\u03C9	 (1/s)","@Freq")
+# ]
+#
+# fig.add_tools(HoverTool(tooltips=tooltips))
+#
+# show(fig)
