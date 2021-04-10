@@ -90,6 +90,9 @@ def four_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=5, row=buttonnum - 8, padx=10, pady=10)
             buttonnum = buttonnum + 1
+    four_window.lift()
+    four_window.attributes('-topmost', True)
+    four_window.after_idle(four_window.attributes,'-topmost',False)
     four_window.mainloop()
     return chosen_circuit
 
@@ -118,7 +121,9 @@ def three_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=2, row=buttonnum-2, padx=10, pady=10)
             buttonnum = buttonnum + 1
-
+    three_window.lift()
+    three_window.attributes('-topmost', True)
+    three_window.after_idle(three_window.attributes,'-topmost',False)
     three_window.mainloop()
     return chosen_circuit
 
@@ -147,7 +152,9 @@ def two_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=2, row=buttonnum-1, padx=10, pady=10)
             buttonnum = buttonnum + 1
-
+    two_window.lift()
+    two_window.attributes('-topmost', True)
+    two_window.after_idle(two_window.attributes,'-topmost',False)
     two_window.mainloop()
     return chosen_circuit
 
@@ -205,16 +212,42 @@ user_choice_img_key=determine_circuit_config(n_elements)
 
 user_choice_circuits_key=user_choice_img_key.lstrip("img")
 
-#Open window with circuit reference picture to assist in element assignment
-user_choice_window = Tk()
-user_choice_window.geometry("500x450")
-user_choice_window.title("Simulated Circuit Configuration")
-frame = LabelFrame(user_choice_window, text="Below is your chosen circuit for reference as you specify element identities:", padx=50, pady=50)
-frame.pack()
+#Use Pillow to resize users chosen circuit image for reference display
+
 user_choice_img=master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
-user_choice_img=ImageTk.PhotoImage(user_choice_img)
-label=Label(frame, image=user_choice_img)
-label.pack()
+
+#define variable to determine when user is done with data inputs to close reference picture window
+user_inputs_done=False
+
+#Open window with circuit reference picture to assist in element assignment
+
+def open_reference_window():
+    global user_inputs_done
+    global user_choice_img
+    reference_window = Tk()
+    reference_window.geometry("500x450")
+    reference_window.title("Simulated Circuit Configuration")
+    frame = LabelFrame(reference_window, text="Below is your chosen circuit for reference as you specify element identities:", padx=50, pady=50)
+    frame.pack()
+    reference_img=ImageTk.PhotoImage(user_choice_img)
+    label=Label(frame, image=reference_img)
+    label.pack()
+
+    def do_nothing(): #disabling closewindow button
+        pass
+    reference_window.protocol('WM_DELETE_WINDOW', do_nothing)
+
+    reference_window.lift()
+    reference_window.attributes('-topmost', True)
+    reference_window.after_idle(reference_window.attributes, '-topmost', False)
+
+    while not user_inputs_done:
+        reference_window.update()
+
+#Import threading, create separate thread for pulling up circuit reference window, and start thread
+import threading
+thread_1=threading.Thread(target=open_reference_window)
+thread_1.start()
 
 ### obtain type of elements and parameters
 element_types = []
@@ -263,9 +296,8 @@ while not lo_hi:
     else:
          print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
             
-#Close window with circuit reference picture
-user_choice_window.destroy()
-user_choice_window.mainloop()
+#Alter variable to indicate user is done with data input to close reference picture window
+user_inputs_done=True
 
 
 w_range = 2*np.pi*np.logspace(low_w,high_w,5000)
