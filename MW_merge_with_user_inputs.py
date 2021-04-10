@@ -241,7 +241,7 @@ for i in range(1,n_elements+1):
         print(str(ith_element) + " is not a valid input. \n Please choose from R. Resistor, C. Capacitance, CPE. Constant Phase Element, W. Warburg Impedance")
   element_types.append(ith_element)
   if ith_element == 'R':
-      r = int(input("Please specify the resitance in Ohms: "))
+      r = float(input("Please specify the resitance in Ohms: "))
       params.append(r)
   elif ith_element == 'C':
       c = float(input("Please specify the capacitance in F: "))
@@ -266,7 +266,7 @@ for i in range(1,n_elements+1):
     params.append([A,D_O,D_R,c_O_bulk,c_R_bulk,n_el])
 
 
-lo_hi = 0 #check that the frequency range is correctlye specified
+lo_hi = 0 #check that the frequency range is correctly specified
 while not lo_hi:
     low_w = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? "))
     high_w = float(input("What is the highest frequency (in Hz) that you'd like to simulate? "))
@@ -280,7 +280,7 @@ user_choice_window.destroy()
 user_choice_window.mainloop()
 
 
-w_range = np.logspace(low_w,high_w,5000)
+w_range = 2*np.pi*np.logspace(low_w,high_w,5000)
 #####object element_types specifies the user defined elements, object params has the corresponding parameters in the same index############
 ###### For example if element_types[1] is a Warburg impedance, params[1] will be a tuple with (A, D_O, D_R, c_0_bulk, c_R_bulk, n_el)######
 
