@@ -542,8 +542,9 @@ output_file("Nyquist.html")
 
 #Calculate the impedance from the user input
 impedance_array = [] #Set this to = calc_Z(circuit, "series")
+nyquist_array = np.column_stack((impedance_array.real, impedance_array.imag, w))
 #Convert the data into a DataFrame
-df = pd.DataFrame(impedance_array, columns = ["Real","Imag","Freq"])
+df = pd.DataFrame(nyquist_array, columns = ["Real","Imag","Freq"])
 
 #Set bounds of the plot based on the max Z values
 x_lim = df["Real"].max() + (.1*df["Real"].max())
