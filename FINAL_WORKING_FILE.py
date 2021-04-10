@@ -194,14 +194,14 @@ print(30 * '-')
 is_valid=0
 #obtain number of elements user wishes to simulate. keep asking for a number until user inputs interger from 1-4
 while not is_valid:
-    n_elements=int(input('How many elements would you like to simulate? : '))
+    n_elements_str=int(input('How many elements would you like to simulate? : '))
     try:
         if n_elements >=1 and n_elements <= 4:
             is_valid = 1 ## set it to 1 to validate input and to terminate the while..not loop
         else:
             print(str(n_elements) + " is not a valid integer. \n Please enter an integer value from 1-4")
     except ValueError:
-        print(str(n_elements) + " is not a valid integer. \n Please enter an integer value from 1-4")
+        print(str(n_elements_str) + " is not a valid integer. \n Please enter an integer value from 1-4")
 
 # #Run user picture selection window to determine circuit congfig
 #
