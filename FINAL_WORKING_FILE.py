@@ -163,18 +163,6 @@ def determine_circuit_config(n):
     elif n==1:
         return "img1_1"
 
-#!/usr/bin/env python
-# coding: utf-8
-
-# ### Possible order of steps:
-# 1. User picks an configuration input, which returns an image dictionary key
-# 2. User inputs parameters for E1-E4, which call those functions and returns numpy arrays stored as variables E1-E4
-# 3. Image dictionary key is used with the circuit dictionary to obtain a circuit list, which is already populated with the numpy arrays from step 2
-# 4. Use calc_Z logic loop to calculate the impedance from that circuit list, returning a single numpy array with the same length as the frequency list
-# 5. Combine the frequency list with the calculated impedance list
-# 6. Graph
-
-# In[1]:
 import matplotlib.pyplot as plt
 import numpy as np
 import cmath as cm
@@ -292,9 +280,6 @@ print(params)
 
 # ## Calculating Individual Element Impedances
 # Able to take a frequency range, element type, and relevant parameters from user input and create an array of impedances for each frequency value
-
-# In[2]:
-
 
 #Resistor
 #w is array of rotationalfrequencies
@@ -541,7 +526,8 @@ from bokeh.models import HoverTool
 output_file("Nyquist.html")
 
 #Calculate the impedance from the user input
-impedance_array = [] #Set this to = calc_Z(circuit, "series")
+circuit = circuits_dict[user_choice_circuits_key]
+impedance_array = calc_Z(circuit, "series")
 nyquist_array = np.column_stack((impedance_array.real, impedance_array.imag, w))
 #Convert the data into a DataFrame
 df = pd.DataFrame(nyquist_array, columns = ["Real","Imag","Freq"])
