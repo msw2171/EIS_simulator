@@ -526,26 +526,48 @@ def calc_Z(input_circuit, config):
     elif config == "series":
         return add_series_Z(dummy_circuit)
 
+# ## Plotting the Nyquist Diagram
 
+import pandas as pd
 
-# ## Testing the Code
+from bokeh.io import output_file, output_notebook
+from bokeh.plotting import figure, show
+from bokeh.models import ColumnDataSource, NumeralTickFormatter
+from bokeh.layouts import row, column, gridplot
+from bokeh.models.widgets import Tabs, Panel
+from bokeh.models import HoverTool
 
-# In[35]:
+#Output the graph as an HTML file:
+output_file("Nyquist.html")
 
+#Calculate the impedance from the user input
+impedance_array = [] #Set this to = calc_Z(circuit, "series")
+#Convert the data into a DataFrame
+df = pd.DataFrame(impedance_array, columns = ["Real","Imag","Freq"])
 
-test_circuit = circuits_dict["4_10"]
-#calc_Z(test_circuit, "circuit")
+#Set bounds of the plot based on the max Z values
+x_lim = df["Real"].max() + (.1*df["Real"].max())
+y_lim = df["Imag"].max() + (.1*df["Imag"].max())
 
-test_plot = calc_Z(test_circuit, "parallel")
+#Create a ColumnDataSource object to handle the impedance df
+impedance_cds = ColumnDataSource(df)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-x = test_plot.real
-y = -test_plot.imag
-ax.scatter(x, y)
+#Create the figure ()
+fig = figure(title="Nyquist Plot",plot_height=500,
+            plot_width=500, x_range=(0,x_lim), y_range=(0,y_lim),
+             x_axis_label= "Z' (\u03A9)", y_axis_label="-Z'' (\u03A9)",
+             tools="pan,wheel_zoom,box_zoom,reset",
+             toolbar_location="below")
 
+fig.circle("Real","Imag",color="#CE1141",source=impedance_cds)
 
-plt.show()
+#add hover "tooltips"
+tooltips = [
+    ("Z' (\u03A9)","@Real"),
+    ("-Z'' (\u03A9)","@Imag"),
+    ("\u03C9	 (1/s)","@Freq")
+]
 
+fig.add_tools(HoverTool(tooltips=tooltips))
 
-# In[ ]:
+show(fig)
