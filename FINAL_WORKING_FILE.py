@@ -297,8 +297,8 @@ while not lo_hi:
     else:
          print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
 
-input_path = input("What is the filepath for the destination in which you'd like to save your file?")
-file_name = input("What is your file name (omit .txt extension)?")
+input_path = input("What is the filepath for the destination in which you'd like to save your file? ")
+file_name = input("What is your file name (omit .txt extension)? ")
 
 #Alter variable to indicate user is done with data input to close reference picture window
 user_inputs_done=True
