@@ -564,7 +564,7 @@ def onpick(event):
     first_wpoint = wpoints[0]
     first_fpoint = fpoints[0]
     annot.xy = (first_xpoint, first_ypoint)
-    text = "(Z\'={:.3g}, -Z\"={:.3g}, w={:.3g})".format(first_xpoint, first_ypoint, first_wpoint)
+    text = " Z\'={:.3g}\n-Z\"={:.3g}\n w={:.3g}\n f={:.3g}".format(first_xpoint, first_ypoint, first_wpoint, first_fpoint)
     annot.set_text(text)
     annot.set_visible(True)
     fig.canvas.draw()
