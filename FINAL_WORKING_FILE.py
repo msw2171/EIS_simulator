@@ -570,8 +570,8 @@ y= -1*impedance_array.imag
 
 fig, ax = plt.subplots()
 ax.set_title('Simulated EIS Plot')
-ax.set_ylabel('Z\' (Ohms)')
-ax.set_xlabel('Z (Ohms)')
+ax.set_ylabel('-Z\" (Ohms)')
+ax.set_xlabel('Z\' (Ohms)')
 line = ax.plot(x, y, picker=True, pickradius=5)
 plt.axis("square")
 
