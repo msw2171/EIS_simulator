@@ -289,18 +289,21 @@ for i in range(1,n_elements+1):
 
 lo_hi = 0 #check that the frequency range is correctly specified
 while not lo_hi:
-    low_w = float(input("What is the lowest order of magnitude frequency (power of 10) that you'd like to simulate? "))
-    high_w = float(input("What is the highes order of magnitude frequency (power of 10) that you'd like to simulate? "))
-    if high_w > low_w:
+    low_f = float(input("What is the lowest frequency that you'd like to simulate? "))
+    high_f = float(input("What is the highest frequency that you'd like to simulate? "))
+    if high_f > low_f:
          lo_hi = 1
     else:
          print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
+
+input_path = input("What is the filepath for the destination in which you'd like to save your file?")
+file_name = input("What is your file name (omit .txt extension)?")
 
 #Alter variable to indicate user is done with data input to close reference picture window
 user_inputs_done=True
 
 
-w_input = np.logspace(low_w,high_w,num = 100)
+w_input = np.logspace(np.log10(low_f),np.log10(high_f),num = 100)
 #print(w_input)
 w_range = []
 for w in w_input:
@@ -327,10 +330,6 @@ def Z_R(w, R):
     Im_Z = np.zeros(len(w))
     return Re_Z+Im_Z
 
-
-# In[3]:
-
-
 #Capacitor
 #w is array of rotational frequencies
 #C is capacitance
@@ -340,9 +339,6 @@ def Z_C(w, C):
     Re_Z = np.zeros(len(w))
     Im_Z = -1/(x*C)*1j
     return Re_Z+Im_Z
-
-
-# In[4]:
 
 
 #Constant phase element
@@ -356,10 +352,6 @@ def Z_CPE(w, params):
     Re_Z = (1/(Q*(x**n)))*cm.cos(cm.pi*n/2)
     Im_Z = (-1/(Q*(x**n)))*cm.sin(cm.pi*n/2)*1j
     return Re_Z+Im_Z
-
-
-# In[5]:
-
 
 #Warburg impedance
 #w is array of rotational frequencies
@@ -382,22 +374,6 @@ def Z_W(w, params):
     Re_Z = sigma/x**0.5
     Im_Z = -sigma/x**0.5*1j
     return Re_Z+Im_Z
-
-
-# ## Converting Input String to Circuit Array
-#
-# - Read the user input string using the user friendly format of para()
-# - Each possible user input is tied to a preset array using a code friendly format
-# - The array is filled with impedance arrays that draw directly from the separately inputed values of E_i
-#
-# Rules for user input:
-# - The elements should follow numerical order (don't write E2 + E1, write E1 + E2)
-# - Only use parenthesis to surround elements in parallel
-# - Within para(), the comma separates the parallel elements, taking precedence over other notation like+
-#
-
-# In[6]:
-
 
 #Input/circuit dictionary
 circuits_dict = {}
@@ -446,11 +422,6 @@ else:
     elements = [E1,E2,E3,E4]
 
 
-
-
-# In[7]:
-
-
 #Possible circuits for 4 elements
 
 circuits_4 = [[[E1,E2,E3,E4]],
@@ -469,9 +440,6 @@ for count, array in enumerate(circuits_4):
     circuits_dict["4_"+str(count+1)]=circuits_4[count]
 
 
-# In[8]:
-
-
 #Possible inputs for 3 elements
 circuits_3 = [[[E1,E2,E3]],
              [[E1,(E2,E3)]],
@@ -480,10 +448,6 @@ circuits_3 = [[[E1,E2,E3]],
 
 for count, array in enumerate(circuits_3):
     circuits_dict["3_"+str(count+1)]=circuits_3[count]
-
-
-
-# In[9]:
 
 
 #Possible inputs for 2 elements
@@ -615,3 +579,10 @@ def onpick(event):
 fig.canvas.mpl_connect('pick_event', onpick)
 
 plt.show()
+
+#Convert the numpy data array into a DataFrame and export as a .txt file to the specified location 
+
+Z_data = np.column_stack((x,y,f_array))
+df = pd.DataFrame(Z_data, columns = ["Z' (ohms)","-Z'' (ohms) ", "f (Hz)"])
+file_path = input_path+file_name+".txt"
+df.to_csv(file_path)
