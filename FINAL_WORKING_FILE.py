@@ -552,50 +552,53 @@ def calc_Z(input_circuit, config):
 
 # ## Plotting the Nyquist Diagram
 
-# import pandas as pd
+import pandas as pd
 #
-# from bokeh.io import output_file, output_notebook
-# from bokeh.plotting import figure, show
-# from bokeh.models import ColumnDataSource, NumeralTickFormatter
-# from bokeh.layouts import row, column, gridplot
-# from bokeh.models.widgets import Tabs, Panel
-# from bokeh.models import HoverTool
+from bokeh.io import output_file, output_notebook
+from bokeh.plotting import figure, show
+from bokeh.models import ColumnDataSource, NumeralTickFormatter
+from bokeh.layouts import row, column, gridplot
+from bokeh.models.widgets import Tabs, Panel
+from bokeh.models import HoverTool
 #
-# #Output the graph as an HTML file:
-# output_file("Nyquist.html")
+#Output the graph as an HTML file:
+output_file("Nyquist.html")
 #
-# #Calculate the impedance from the user input
+# Calculate the impedance from the user input
 circuit = circuits_dict[user_choice_circuits_key]
 impedance_array = calc_Z(circuit, "series")
 nyquist_array = np.column_stack((impedance_array.real, -impedance_array.imag, w_range))
 plt.figure()
 plt.scatter(impedance_array.real,-impedance_array.imag)
 # #Convert the data into a DataFrame
-# df = pd.DataFrame(nyquist_array, columns = ["Real","Imag","Freq"])
+df = pd.DataFrame(nyquist_array, columns = ["Real","Imag","Freq"])
 #
 # #Set bounds of the plot based on the max Z values
-# x_lim = df["Real"].max() + (.1*df["Real"].max())
-# y_lim = df["Imag"].max() + (.1*df["Imag"].max())
+if df["Real"].max() > df["Imag"].max():
+    lim = df["Real"].max() + (.1*df["Real"].max())
+else:
+    lim = df["Imag"].max() + (.1*df["Imag"].max())
+
 #
 # #Create a ColumnDataSource object to handle the impedance df
-# impedance_cds = ColumnDataSource(df)
+impedance_cds = ColumnDataSource(df)
 #
 # #Create the figure ()
-# fig = figure(title="Nyquist Plot",plot_height=500,
-#             plot_width=500, x_range=(0,x_lim), y_range=(0,y_lim),
-#              x_axis_label= "Z' (\u03A9)", y_axis_label="-Z'' (\u03A9)",
-#              tools="pan,wheel_zoom,box_zoom,reset",
-#              toolbar_location="below")
+fig = figure(title="Nyquist Plot",plot_height=500,
+             plot_width=500, x_range=(0,lim), y_range=(0,lim),
+             x_axis_label= "Z' (\u03A9)", y_axis_label="-Z'' (\u03A9)",
+             tools="pan,wheel_zoom,box_zoom,reset",
+             toolbar_location="below")
+
+fig.circle("Real","Imag",color="#CE1141",source=impedance_cds)
 #
-# fig.circle("Real","Imag",color="#CE1141",source=impedance_cds)
+ #add hover "tooltips"
+tooltips = [
+     ("Z' (\u03A9)","@Real"),
+     ("-Z'' (\u03A9)","@Imag"),
+     ("\u03C9	 (1/s)","@Freq")
+ ]
 #
-# #add hover "tooltips"
-# tooltips = [
-#     ("Z' (\u03A9)","@Real"),
-#     ("-Z'' (\u03A9)","@Imag"),
-#     ("\u03C9	 (1/s)","@Freq")
-# ]
+fig.add_tools(HoverTool(tooltips=tooltips))
 #
-# fig.add_tools(HoverTool(tooltips=tooltips))
-#
-# show(fig)
+show(fig)
