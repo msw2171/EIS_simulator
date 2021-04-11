@@ -173,6 +173,7 @@ def determine_circuit_config(n):
 import matplotlib.pyplot as plt
 import numpy as np
 import cmath as cm
+import pandas as pd
 
 ###### Introduction screen and number/type of elements are obtained in this block##################
 ###################################################################################################
