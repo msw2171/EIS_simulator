@@ -289,14 +289,21 @@ for i in range(1,n_elements+1):
 
 
 lo_hi = 0 #check that the frequency range is correctly specified
-while not lo_hi:
+pos_freq = 0
+while not lo_hi or not pos_freq:
+    lo_hi = 0
+    pos_freq = 0
     low_f = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? "))
     high_f = float(input("What is the highest frequency (in Hz) that you'd like to simulate? "))
     if high_f > low_f:
          lo_hi = 1
     else:
          print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
-
+    if low_f > 0 and high_f > 0:
+        pos_freq = 1
+    else:
+        print("Please ensure a proper frequency range with positive values above 0 Hz")
+        
 input_path = input("What is the filepath for the destination in which you'd like to save your file? ")
 file_name = input("What is your file name (omit .txt extension)? ")
 
