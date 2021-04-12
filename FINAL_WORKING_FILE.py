@@ -290,8 +290,8 @@ for i in range(1,n_elements+1):
 
 lo_hi = 0 #check that the frequency range is correctly specified
 while not lo_hi:
-    low_f = float(input("What is the lowest frequency that you'd like to simulate? "))
-    high_f = float(input("What is the highest frequency that you'd like to simulate? "))
+    low_f = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? "))
+    high_f = float(input("What is the highest frequency (in Hz) that you'd like to simulate? "))
     if high_f > low_f:
          lo_hi = 1
     else:
