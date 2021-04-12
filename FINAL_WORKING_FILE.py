@@ -262,30 +262,37 @@ for i in range(1,n_elements+1):
     else:
         print(str(ith_element) + " is not a valid input. \n Please choose from R. Resistor, C. Capacitance, CPE. Constant Phase Element, W. Warburg Impedance")
   element_types.append(ith_element)
-  if ith_element == 'R':
-      r = float(input("Please specify the resitance in Ohms: "))
-      params.append(r)
-  elif ith_element == 'C':
-      c = float(input("Please specify the capacitance in F: "))
-      params.append(c)
-  elif ith_element == 'CPE':
-      ntrue = 0
-      q = float(input("Please specify the Q parameter in F: "))
-      while not ntrue:
-          n = float(input("Please specify the ideality factor n between 0 and 1: "))#ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
-          if n >= 0 and n<=1:
-              ntrue = 1
+  valid_values = 0
+  while not valid_values:
+      try:
+          if ith_element == 'R':
+              r = float(input("Please specify the resitance in Ohms: "))
+              params.append(r)
+          elif ith_element == 'C':
+              c = float(input("Please specify the capacitance in F: "))
+              params.append(c)
+          elif ith_element == 'CPE':
+              ntrue = 0
+              q = float(input("Please specify the Q parameter in F: "))
+              while not ntrue:
+                  n = float(input("Please specify the ideality factor n between 0 and 1: "))#ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
+                  if n >= 0 and n<=1:
+                      ntrue = 1
+                  else:
+                      print(str(n) + "is not between 0 and 1")
+              params.append([q,n])
           else:
-              print(str(n) + "is not between 0 and 1")
-      params.append([q,n])
-  else:
-    A = float(input("Please specify the area A in cm^2: "))
-    D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s: "))
-    D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s: "))
-    c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
-    c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3: "))
-    n_el = int(input("Please specify the number of electrons in the redox reaction: "))
-    params.append([A,D_O,D_R,c_O_bulk,c_R_bulk,n_el])
+            A = float(input("Please specify the area A in cm^2: "))
+            D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s: "))
+            D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s: "))
+            c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
+            c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3: "))
+            n_el = int(input("Please specify the number of electrons in the redox reaction: "))
+            params.append([A,D_O,D_R,c_O_bulk,c_R_bulk,n_el])
+          valid_values = 1
+      except ValueError:
+          print("You have entered an invalid value. Please ensure entered values are numerical.")
+
 
 
 lo_hi = 0 #check that the frequency range is correctly specified
