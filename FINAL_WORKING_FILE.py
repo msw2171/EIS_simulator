@@ -509,9 +509,7 @@ def add_parallel_Z(elements):
 
 def calc_Z(input_circuit, config):
     circuit = input_circuit
-    #Tuple can't be modified so create a dummy list to store calculations
     dummy_circuit = []
-    #while not all(isinstance(x, np.ndarray) for x in dummy_circuit):
     for i, feature in enumerate(circuit):
         if isinstance(feature, np.ndarray):
             dummy_circuit.append(feature)
