@@ -16,7 +16,7 @@ img_dict_3e = {}
 img_dict_2e = {}
 img_dict_1e = {}
 
-# for loops to fill process/resize images with Pillow and fill image Dictionaries
+# for loops to fill process/resize images with PIL and fill image Dictionaries
 for x in range(1, 11):
     full_img_path = imgfolder_4e + f'pic4_{x}.png'
     img_processed = Image.open(full_img_path)
@@ -38,7 +38,7 @@ for x in range(1, 2):
     img_processed = img_processed.resize((145, 125), Image.ANTIALIAS)
     img_dict_1e[f'img1_{x}'] = img_processed
 
-# Construct combined image dictionary out of seperate dictionaries
+# Construct combined image dictionary out of separate dictionaries
 
 master_img_dict = {}
 for key in img_dict_4e:
@@ -212,15 +212,15 @@ print(30 * '-')
 is_valid = 0
 # obtain number of elements user wishes to simulate. keep asking for a number until user inputs interger from 1-4
 while not is_valid:
-    n_elements_str = input('How many elements would you like to simulate? : ')
+    n_elements_str = input('How many elements would you like to simulate? Enter an integer value (1-4) : ')
     try:
         n_elements = int(n_elements_str)
         if n_elements >= 1 and n_elements <= 4:
             is_valid = 1  ## set it to 1 to validate input and to terminate the while..not loop
         else:
-            print(str(n_elements) + " is not a valid integer. \n Please enter an integer value from 1-4")
+            print(str(n_elements) + " is not a valid integer. \nPlease enter an integer value from 1-4.")
     except ValueError:
-        print(str(n_elements_str) + " is not a valid integer. \n Please enter an integer value from 1-4")
+        print(str(n_elements_str) + " is not a valid integer. \nPlease enter an integer value from 1-4.")
 
 # Run user picture selection window to determine circuit congfig
 
@@ -247,7 +247,7 @@ def open_reference_window():
     reference_window.geometry("500x450")
     reference_window.title("Simulated Circuit Configuration")
     frame = LabelFrame(reference_window,
-                       text="Below is your chosen circuit for reference as you specify element identities:", padx=50,
+                       text="Below is your chosen circuit for reference as you specify element identities :", padx=50,
                        pady=50)
     frame.pack()
     reference_img = ImageTk.PhotoImage(user_choice_img)
@@ -271,7 +271,6 @@ def open_reference_window():
 
 # Import threading, create separate thread for pulling up circuit reference window, and start thread
 import threading
-
 thread_1 = threading.Thread(target=open_reference_window)
 thread_1.start()
 
@@ -286,34 +285,34 @@ for i in range(1, n_elements + 1):
             valid = 1
         else:
             print(str(
-                ith_element) + " is not a valid input. \n Please choose from R. Resistor, C. Capacitance, CPE. Constant Phase Element, W. Warburg Impedance")
+                ith_element) + " is not a valid input. \nPlease choose from R. Resistor, C. Capacitance, CPE. Constant Phase Element, W. Warburg Impedance")
     element_types.append(ith_element)
     valid_values = 0
     while not valid_values:
         try:
             if ith_element == 'R':
-                r = float(input("Please specify the resitance in Ohms: "))
+                r = float(input("Please specify the resitance in Ohms : "))
                 params.append(r)
             elif ith_element == 'C':
-                c = float(input("Please specify the capacitance in F: "))
+                c = float(input("Please specify the capacitance in F : "))
                 params.append(c)
             elif ith_element == 'CPE':
                 ntrue = 0
-                q = float(input("Please specify the Q parameter in F: "))
+                q = float(input("Please specify the Q parameter in F : "))
                 while not ntrue:
                     n = float(input(
-                        "Please specify the ideality factor n between 0 and 1: "))  # ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
+                        "Please specify the ideality factor n between 0 and 1 : "))  # ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
                     if n >= 0 and n <= 1:
                         ntrue = 1
                     else:
-                        print(str(n) + "is not between 0 and 1")
+                        print(str(n) + " is not between 0 and 1.")
                 params.append([q, n])
             else:
-                A = float(input("Please specify the area A in cm^2: "))
-                D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s: "))
-                D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s: "))
-                c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3: "))
-                c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3: "))
+                A = float(input("Please specify the area A in cm^2 : "))
+                D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s : "))
+                D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s : "))
+                c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3 : "))
+                c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3 : "))
                 n_el = int(input("Please specify the number of electrons in the redox reaction: "))
                 params.append([A, D_O, D_R, c_O_bulk, c_R_bulk, n_el])
             valid_values = 1
@@ -328,8 +327,8 @@ while not nonstr_freq:
         while not lo_hi or not pos_freq:
             lo_hi = 0
             pos_freq = 0
-            low_f = float(input("What is the lowest frequency (in Hz) that you'd like to simulate? "))
-            high_f = float(input("What is the highest frequency (in Hz) that you'd like to simulate? "))
+            low_f = float(input("What is the lowest frequency (in Hz) that you would like to simulate? : "))
+            high_f = float(input("What is the highest frequency (in Hz) that you would like to simulate? : "))
             if high_f > low_f:
                 lo_hi = 1
             else:
@@ -337,16 +336,16 @@ while not nonstr_freq:
             if low_f > 0 and high_f > 0:
                 pos_freq = 1
             else:
-                print("Please ensure a proper frequency range with positive values above 0 Hz")
+                print("Please ensure a proper frequency range with positive values above 0 Hz.")
         nonstr_freq=1
     except ValueError:
-        print("Please enter  positive numerical values for your frequency range.")
+        print("Please ensure you have entered positive numerical values for your frequency range.")
 
 
 # Alter variable to indicate user is done with data input to close reference picture window
 user_inputs_done = True
 
-w_input = np.logspace(np.log10(low_f), np.log10(high_f), num=100)
+w_input = np.logspace(np.log10(low_f), np.log10(high_f), num=1000)
 # print(w_input)
 w_range = []
 for w in w_input:
@@ -578,7 +577,18 @@ fig, ax = plt.subplots()
 ax.set_title('Simulated EIS Plot')
 ax.set_ylabel('-Z\" (Ohms)')
 ax.set_xlabel('Z\' (Ohms)')
-line = ax.plot(x, y, picker=True, pickradius=5)
+
+Zimag_allzero=True
+
+for _ in range(len(y)):
+    if y[_] != 0:
+        Zimag_allzero=False
+if Zimag_allzero:
+    y = np.zeros(len(y))
+    line = ax.plot(x, y, "o", picker=True, pickradius=5)
+else:
+    line = ax.plot(x, y, picker=True, pickradius=5)
+
 plt.axis("square")
 
 # Set up Plot Annotation Visual
@@ -606,13 +616,13 @@ def onpick(event):
     first_wpoint = wpoints[0]
     first_fpoint = fpoints[0]
     annot.xy = (first_xpoint, first_ypoint)
-    text = " Z\'={:.3g}\n-Z\"={:.3g}\n \u03c9 ={:.3g}\n f  ={:.3g}".format(first_xpoint, first_ypoint, first_wpoint,
+    text = " Z\'={:.4g}\n-Z\"={:.4g}\n \u03c9 ={:.4g}\n f  ={:.4g}".format(first_xpoint, first_ypoint, first_wpoint,
                                                                    first_fpoint)
     annot.set_text(text)
     annot.set_visible(True)
     fig.canvas.draw()
 
-    console_print_text = ' Z\' = {:.3g} Ohms\n-Z\" = {:.3g} Ohms\nAngular Frequency \u03c9 = {:.3g} Hz\nFrequency f = {:.3g} Hz'.format(
+    console_print_text = ' Z\' = {:.4g} Ohms\n-Z\" = {:.4g} Ohms\nAngular Frequency \u03c9 = {:.4g} Hz\nFrequency f = {:.4g} Hz'.format(
         first_xpoint, first_ypoint, first_wpoint, first_fpoint)
 
     print('-------------------------------')
@@ -631,8 +641,8 @@ plt.show()
 from tkinter import filedialog
 import tkinter.font as font
 
-Z_data = np.column_stack((x, y, f_array))
-df = pd.DataFrame(Z_data, columns=["Z' (ohms)", "-Z'' (ohms) ", "f (Hz)"])
+Z_data = np.column_stack((x, y, w_array, f_array))
+df = pd.DataFrame(Z_data, columns=["Z' (ohms)", "-Z'' (ohms)", "Angular frequency (Hz)", "frequency (Hz)"])
 
 def savefile():
     global df
