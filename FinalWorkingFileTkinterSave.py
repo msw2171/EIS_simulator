@@ -53,7 +53,7 @@ for key in img_dict_1e:
 # Establish default string variable for Circuit Choice
 chosen_circuit = "None"
 
-
+# Define function to bring pop up windows to forefront
 def window_tofront(window):
     window.lift()
     window.attributes('-topmost', True)
@@ -70,11 +70,15 @@ def four_element_choice():
                        padx=50, pady=50)
     frame.pack()
 
+# Define function for pushing button event (alter chosencircuit variable with arguement and close window)
     def buttonpush(a):
         global chosen_circuit
         chosen_circuit = a
         four_window.destroy()
 
+# translate values in img_dict into an b_img_dict dictionary using ImageTk.photoimage to be usable in Tkinter
+# generate buttons out of image dictionary, using values as images and keys as buttonpush arguments
+# if/elif statements to format button placement on grid
     b_img_dict = {}
     buttonnum = 1
     for key in img_dict_4e:
@@ -100,12 +104,15 @@ def four_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=5, row=buttonnum - 8, padx=10, pady=10)
             buttonnum = buttonnum + 1
+
+# call window to front, mainloop window (to keep it open)
     window_tofront(four_window)
     four_window.mainloop()
+# establish the chosen circuit as the return value for the window calling function
     return chosen_circuit
 
 
-# Function to open window for 3 element choices
+# Function to open window for 3 element choices. Same logic as fourwindow but with different button grid layout
 
 def three_element_choice():
     three_window = Tk()
@@ -139,7 +146,7 @@ def three_element_choice():
     return chosen_circuit
 
 
-# Function to open window for 2 element choices
+# Function to open window for 2 element choices. Same logic with altered button grid layout
 
 def two_element_choice():
     two_window = Tk()
@@ -173,7 +180,8 @@ def two_element_choice():
     return chosen_circuit
 
 
-# function to prompt user to enter number of circuit elements and return circuit element image key
+# function to call appropriate window based on integer value (provided by user) and return circuit dictionary image key
+# clickable window unnecessary for 1 element (only 1 choice)
 
 def determine_circuit_config(n):
     if n == 4:
@@ -185,6 +193,8 @@ def determine_circuit_config(n):
     elif n == 1:
         return "img1_1"
 
+
+# import modules for mathematical operation
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -209,7 +219,8 @@ print(30 * '-')
 
 ## Wait for valid input in while...not ###
 is_valid = 0
-# obtain number of elements user wishes to simulate. keep asking for a number until user inputs interger from 1-4
+# obtain number of elements user wishes to simulate. keep asking for a number until user inputs integer from 1-4
+# try/except for error handling of float and string inputs, while loop to ensure value 1-4
 while not is_valid:
     n_elements_str = input('How many elements would you like to simulate? Enter an integer value (1-4) : ')
     try:
@@ -221,7 +232,7 @@ while not is_valid:
     except ValueError:
         print(str(n_elements_str) + " is not a valid integer. \nPlease enter an integer value from 1-4.")
 
-# Run user picture selection window to determine circuit congfig
+# Run user picture selection window to determine circuit config
 
 user_choice_img_key = determine_circuit_config(n_elements)
 
@@ -229,7 +240,7 @@ user_choice_img_key = determine_circuit_config(n_elements)
 
 user_choice_circuits_key = user_choice_img_key.lstrip("img")
 
-# Use Pillow to resize users chosen circuit image for reference display
+# Use PiL to resize users chosen circuit image for reference display
 
 user_choice_img = master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
 
@@ -253,13 +264,14 @@ def open_reference_window():
     label = Label(frame, image=reference_img)
     label.pack()
 
-    def do_nothing():  # disabling closewindow button
+    def do_nothing():  # disabling closewindow button (window closes automatically when user finishes inputs)
         pass
 
     reference_window.protocol('WM_DELETE_WINDOW', do_nothing)
 
     window_tofront(reference_window)
 
+# continue to update window (showing window onscreen) until user finishes inputs
     while not user_inputs_done:
         reference_window.update()
 
@@ -267,13 +279,30 @@ def open_reference_window():
 
 
 # Import threading, create separate thread for pulling up circuit reference window, and start thread
+# This allows user input code to continue while the window code runs and loops
 import threading
 thread_1 = threading.Thread(target=open_reference_window)
 thread_1.start()
 
 ### obtain type of elements and parameters
+# elements types are stored in list
+# parameters are stored in params list, with corresponding index as element_types list.
+# if more than one parameter is needed to describe and element ie. CPE or W, the value stored in params is a nested list with multiple parameters.
+
+#####object element_types specifies the user defined elements, object params has the corresponding parameters in the same index############
+###### For example if element_types[1] is a Warburg impedance, params[1] will be a tuple with (A, D_O, D_R, c_0_bulk, c_R_bulk, n_el)######
+
 element_types = []
 params = []
+
+def check_neg_error(a):  #function designed to produce valueerror if given a negative or 0 as an argument
+    if a <= 0 :
+        cause_error=int("str")
+        pass
+    else:
+        pass
+
+# for loop through element number
 for i in range(1, n_elements + 1):
     valid = 0
     while not valid:  # ensure user input is only allowed element types R, C, CPE, or W
@@ -289,13 +318,16 @@ for i in range(1, n_elements + 1):
         try:
             if ith_element == 'R':
                 r = float(input("Please specify the resitance in Ohms : "))
+                check_neg_error(r)
                 params.append(r)
             elif ith_element == 'C':
                 c = float(input("Please specify the capacitance in F : "))
+                check_neg_error(c)
                 params.append(c)
             elif ith_element == 'CPE':
                 ntrue = 0
                 q = float(input("Please specify the Q parameter in F : "))
+                check_neg_error(q)
                 while not ntrue:
                     n = float(input(
                         "Please specify the ideality factor n between 0 and 1 : "))  # ensure that the ideality factor is indeed between 0 and 1 or continue asking for it until it is.
@@ -306,17 +338,29 @@ for i in range(1, n_elements + 1):
                 params.append([q, n])
             else:
                 A = float(input("Please specify the area A in cm^2 : "))
+                check_neg_error(A)
+
                 D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s : "))
+                check_neg_error(D_O)
+
                 D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s : "))
+                check_neg_error(D_R)
+
                 c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3 : "))
+                check_neg_error(c_O_bulk)
+
                 c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3 : "))
+                check_neg_error(c_R_bulk)
+
                 n_el = int(input("Please specify the number of electrons in the redox reaction: "))
+                check_neg_error(n_el)
+
                 params.append([A, D_O, D_R, c_O_bulk, c_R_bulk, n_el])
             valid_values = 1
         except ValueError:
-            print("You have entered an invalid value. Please ensure entered values are numerical.")
+            print("You have entered an invalid value. Please ensure entered values are positive and numerical.")
 
-lo_hi = 0  # check that the frequency range is correctly specified
+lo_hi = 0  # check that the frequency range is correctly specified, low to high, positive, and numerical
 pos_freq = 0
 nonstr_freq = 0
 while not nonstr_freq:
@@ -342,14 +386,14 @@ while not nonstr_freq:
 # Alter variable to indicate user is done with data input to close reference picture window
 user_inputs_done = True
 
+# create range of frequencies for calculation in increments in logspace
 w_input = np.logspace(np.log10(low_f), np.log10(high_f), num=1000)
-# print(w_input)
+
+# multiply each element in the f range by 2pi and append to new list to give list of angular frequencies
 w_range = []
 for w in w_input:
     x = round(2 * np.pi * w, 4)
     w_range.append(x)
-#####object element_types specifies the user defined elements, object params has the corresponding parameters in the same index############
-###### For example if element_types[1] is a Warburg impedance, params[1] will be a tuple with (A, D_O, D_R, c_0_bulk, c_R_bulk, n_el)######
 
 
 print(element_types)
@@ -575,8 +619,10 @@ ax.set_title('Simulated EIS Plot')
 ax.set_ylabel('-Z\" (Ohms)')
 ax.set_xlabel('Z\' (Ohms)')
 
-Zimag_allzero=True
+# if Z imaginary is 0 at all points, The resistance is independant of frequency, all plotted points are the same Z" and Z'
+# The plot should be given as scatter instead of line such that the singular point is visible on the graph
 
+Zimag_allzero=True
 for _ in range(len(y)):
     if y[_] != 0:
         Zimag_allzero=False
@@ -586,9 +632,10 @@ if Zimag_allzero:
 else:
     line = ax.plot(x, y, picker=True, pickradius=5)
 
+# plotting axis scales as equal in a square axis allows graph to be read more easily qualitatively
 plt.axis("square")
 
-# Set up Plot Annotation Visual
+# Set up Plot Annotation Visual and disable it until onpick click event
 annot = ax.annotate("", xy=(0, 0), xytext=(-40, 40), textcoords="offset points",
                     bbox=dict(boxstyle='round4', fc='linen', ec='k', lw=1),
                     arrowprops=dict(arrowstyle='-|>'))
@@ -596,7 +643,7 @@ annot = ax.annotate("", xy=(0, 0), xytext=(-40, 40), textcoords="offset points",
 annot.set_visible(False)
 
 
-# Pick point/annotate graph function
+# define Pick point/annotate graph function
 def onpick(event):
     global w_array
     global f_array
@@ -626,11 +673,16 @@ def onpick(event):
     print(console_print_text)
     print('-------------------------------')
 
+# define a buttonpress event to clear annotation if outside of graph axes
+def clear_annot(event):
+    if event.inaxes is None:
+        annot.set_visible(False)
+        event.canvas.draw()
 
-# Plot Graph
+# link defined events to plotting canvas and plot
 
 fig.canvas.mpl_connect('pick_event', onpick)
-
+fig.canvas.mpl_connect('button_press_event', clear_annot)
 plt.show()
 
 # Convert the numpy data array into a DataFrame and export as a .txt file to the specified location
