@@ -54,6 +54,11 @@ for key in img_dict_1e:
 chosen_circuit = "None"
 
 
+def window_tofront(window):
+    window.lift()
+    window.attributes('-topmost', True)
+    window.after_idle(window.attributes, '-topmost', False)
+
 # function to open picture/button window of 4 element choices
 
 def four_element_choice():
@@ -95,9 +100,7 @@ def four_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=5, row=buttonnum - 8, padx=10, pady=10)
             buttonnum = buttonnum + 1
-    four_window.lift()
-    four_window.attributes('-topmost', True)
-    four_window.after_idle(four_window.attributes, '-topmost', False)
+    window_tofront(four_window)
     four_window.mainloop()
     return chosen_circuit
 
@@ -131,9 +134,7 @@ def three_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=2, row=buttonnum - 2, padx=10, pady=10)
             buttonnum = buttonnum + 1
-    three_window.lift()
-    three_window.attributes('-topmost', True)
-    three_window.after_idle(three_window.attributes, '-topmost', False)
+    window_tofront(three_window)
     three_window.mainloop()
     return chosen_circuit
 
@@ -167,9 +168,7 @@ def two_element_choice():
             buttontest = Button(frame, image=b_img_dict[key], command=partial(buttonpush, key))
             buttontest.grid(column=2, row=buttonnum - 1, padx=10, pady=10)
             buttonnum = buttonnum + 1
-    two_window.lift()
-    two_window.attributes('-topmost', True)
-    two_window.after_idle(two_window.attributes, '-topmost', False)
+    window_tofront(two_window)
     two_window.mainloop()
     return chosen_circuit
 
@@ -259,9 +258,7 @@ def open_reference_window():
 
     reference_window.protocol('WM_DELETE_WINDOW', do_nothing)
 
-    reference_window.lift()
-    reference_window.attributes('-topmost', True)
-    reference_window.after_idle(reference_window.attributes, '-topmost', False)
+    window_tofront(reference_window)
 
     while not user_inputs_done:
         reference_window.update()
@@ -665,8 +662,6 @@ save_button.pack(padx=10, pady=10)
 close_button=Button(frame, text="Close", font=font.Font(size=20), command=push_close)
 close_button.pack(padx=10, pady=10)
 
-save_window.lift()
-save_window.attributes('-topmost', True)
-save_window.after_idle(save_window.attributes, '-topmost', False)
+window_tofront(save_window)
 
 save_window.mainloop()
