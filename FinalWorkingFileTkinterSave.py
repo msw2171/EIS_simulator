@@ -346,7 +346,7 @@ for i in range(1, n_elements + 1):
                 D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s : "))
                 check_neg_error(D_R)
 
-                c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/cm^3 : "))
+                c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/L : "))/1000
                 check_neg_error(c_O_bulk)
 
                 c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3 : "))
