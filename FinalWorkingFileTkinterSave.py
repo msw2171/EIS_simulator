@@ -349,7 +349,7 @@ for i in range(1, n_elements + 1):
                 c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/L : "))/1000
                 check_neg_error(c_O_bulk)
 
-                c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/cm^3 : "))
+                c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/L : "))/1000
                 check_neg_error(c_R_bulk)
 
                 n_el = int(input("Please specify the number of electrons in the redox reaction: "))
