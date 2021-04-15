@@ -5,6 +5,7 @@ from functools import partial
 #import modules for opening and formatting windows and image processing
 
 # pathway to image folder (note:change to your device path, if on Windows change backslashes to forward)
+
 img_folder_path="F:/Python images for EIS"
 
 imgfolder_4e = img_folder_path + "/4element/"
@@ -68,11 +69,11 @@ def window_tofront(window):
 # window text and size/frame setup
 def four_element_choice():
     four_window = Tk()
-    four_window.geometry("1000x450")
+    four_window.geometry("1000x500")
     four_window.title("Circuit configuration Options")
-    frame = LabelFrame(four_window,
-                       text="Choose from the possible circuit configurations.You will be able to specify the identity of each element afterwards:",
-                       padx=50, pady=50)
+    label1 = Label(four_window, text="Choose from the possible circuit configurations.\nYou will be able to specify the identity of each element afterwards:", padx=10, pady=10)
+    label1.pack()
+    frame = LabelFrame(four_window, padx=50, pady=50)
     frame.pack()
 
     # Define function for pushing button event (alter chosencircuit variable with argument and close window)
@@ -123,11 +124,11 @@ def four_element_choice():
 
 def three_element_choice():
     three_window = Tk()
-    three_window.geometry("1000x450")
+    three_window.geometry("500x500")
     three_window.title("Circuit configuration Options")
-    frame = LabelFrame(three_window,
-                       text="Choose from the possible circuit configurations. You will be able to specify the identity of each element afterwards:",
-                       padx=50, pady=50)
+    label1 = Label(three_window, text="Choose from the possible circuit configurations.\nYou will be able to specify the identity of each element afterwards:", padx=10, pady=10)
+    label1.pack()
+    frame = LabelFrame(three_window, padx=50, pady=50)
     frame.pack()
 
     def buttonpush(a):
@@ -157,11 +158,11 @@ def three_element_choice():
 
 def two_element_choice():
     two_window = Tk()
-    two_window.geometry("1000x450")
+    two_window.geometry("500x350")
     two_window.title("Circuit configuration Options")
-    frame = LabelFrame(two_window,
-                       text="Choose from the possible circuit configurations. You will be able to specify the identity of each element afterwards:",
-                       padx=50, pady=50)
+    label1 = Label(two_window, text="Choose from the possible circuit configurations.\nYou will be able to specify the identity of each element afterwards:", padx=10, pady=10)
+    label1.pack()
+    frame = LabelFrame(two_window, padx=50, pady=50)
     frame.pack()
 
     def buttonpush(a):
@@ -261,7 +262,7 @@ def open_reference_window():
     global user_inputs_done
     global user_choice_img
     reference_window = Tk()
-    reference_window.geometry("500x450")
+    reference_window.geometry("500x400")
     reference_window.title("Simulated Circuit Configuration")
     frame = LabelFrame(reference_window,
                        text="Below is your chosen circuit for reference as you specify element identities :", padx=50,
