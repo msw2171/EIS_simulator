@@ -404,8 +404,8 @@ while not nonstr_freq:
         while not lo_hi or not pos_freq:
             lo_hi = 0
             pos_freq = 0
-            low_f = float(input("What is the lowest frequency (in Hz) that you would like to simulate? : "))
-            high_f = float(input("What is the highest frequency (in Hz) that you would like to simulate? : "))
+            low_f = float(input("What is the lowest frequency f (in Hz) that you would like to simulate? : "))
+            high_f = float(input("What is the highest frequency f (in Hz) that you would like to simulate? : "))
             if high_f > low_f:
                 lo_hi = 1
             else:
