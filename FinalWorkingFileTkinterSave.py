@@ -337,25 +337,42 @@ for i in range(1, n_elements + 1):
                         print(str(n) + " is not between 0 and 1.")
                 params.append([q, n])
             else:
-                A = float(input("Please specify the area A in cm^2 : "))
-                check_neg_error(A)
+                choose_sigma=False
+                choose_param=False
+                print("Would you like to provide the general Warburg coefficent \u03C3 or more specific parameters (ie. species concentrations, diffusion coefficients etc.)?")
+                while not choose_param and not choose_sigma:
+                    sigma_or_param=str(input("Enter \'sigma\' or \'parameters\' : "))
+                    if sigma_or_param == "sigma":
+                        choose_sigma = True
+                    elif sigma_or_param == "parameters":
+                        choose_param = True
+                    else:
+                        print("Please enter one of the provided responses.")
 
-                D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s : "))
-                check_neg_error(D_O)
+                if choose_sigma:
+                    sigma_val=float(input("Please specify the value of the Warburg coefficent \u03C3 in Ohms/\u221asec."))
+                    check_neg_error(sigma_val)
+                    params.append([sigma_val])
+                else:
+                    A = float(input("Please specify the area A in cm^2 : "))
+                    check_neg_error(A)
 
-                D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s : "))
-                check_neg_error(D_R)
+                    D_O = float(input("Please specify the diffusion coefficient of the oxidized species in cm^2/s : "))
+                    check_neg_error(D_O)
 
-                c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/L : "))/1000
-                check_neg_error(c_O_bulk)
+                    D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s : "))
+                    check_neg_error(D_R)
 
-                c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/L : "))/1000
-                check_neg_error(c_R_bulk)
+                    c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/L : "))/1000
+                    check_neg_error(c_O_bulk)
 
-                n_el = int(input("Please specify the number of electrons in the redox reaction: "))
-                check_neg_error(n_el)
+                    c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/L : "))/1000
+                    check_neg_error(c_R_bulk)
 
-                params.append([A, D_O, D_R, c_O_bulk, c_R_bulk, n_el])
+                    n_el = int(input("Please specify the number of electrons in the redox reaction: "))
+                    check_neg_error(n_el)
+
+                    params.append([A, D_O, D_R, c_O_bulk, c_R_bulk, n_el])
             valid_values = 1
         except ValueError:
             print("You have entered an invalid value. Please ensure entered values are positive and numerical.")
@@ -447,19 +464,24 @@ def Z_CPE(w, params):
 
 def Z_W(w, params):
     x = np.array(w)
-    A = params[0]
-    D_O = params[1]
-    D_R = params[2]
-    c_O_bulk = params[3]
-    c_R_bulk = params[4]
-    n = params[5]
-    R = 8.314  # J/K•mol
-    F = 96485  # C/mol
-    T = 298  # K
-    sigma = (R * T / ((n * F) ** 2 * A * 2 ** 0.5) * ((1 / D_O ** 0.5 / c_O_bulk) + (1 / D_R ** 0.5 / c_R_bulk)))
-    Re_Z = sigma / x ** 0.5
-    Im_Z = -sigma / x ** 0.5 * 1j
-    return Re_Z + Im_Z
+    if len(params)==6:
+        A = params[0]
+        D_O = params[1]
+        D_R = params[2]
+        c_O_bulk = params[3]
+        c_R_bulk = params[4]
+        n = params[5]
+        R = 8.314  # J/K•mol
+        F = 96485  # C/mol
+        T = 298  # K
+        sigma = (R * T / ((n * F) ** 2 * A * 2 ** 0.5) * ((1 / D_O ** 0.5 / c_O_bulk) + (1 / D_R ** 0.5 / c_R_bulk)))
+        Re_Z = sigma / x ** 0.5
+        Im_Z = -sigma / x ** 0.5 * 1j
+        return Re_Z + Im_Z
+    else:
+        Re_Z = params[0] / x ** 0.5
+        Im_Z = -params[0] / x ** 0.5 * 1j
+        return Re_Z + Im_Z
 
 ### Handling User Input of Element Parameters ###
 
