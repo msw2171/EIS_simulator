@@ -400,12 +400,14 @@ print(element_types)
 print(params)
 
 
-# ## Calculating Individual Element Impedances
-# Able to take a frequency range, element type, and relevant parameters from user input and create an array of impedances for each frequency value
+### Calculating Individual Element Impedances ###
+
+# Able to take a frequency range, and relevant parameters from user input
+# Returns an np.array of impedances for each frequency value
 
 # Resistor
-# w is array of rotationalfrequencies
-# R is resistance
+# w is array of angular frequencies in rad/s
+# R is resistance in ohms
 
 def Z_R(w, R):
     Re_Z = np.full(len(w), R)
@@ -414,8 +416,8 @@ def Z_R(w, R):
 
 
 # Capacitor
-# w is array of rotational frequencies
-# C is capacitance
+# w is array of angular frequencies in rad/s
+# C is capacitance in farads
 
 def Z_C(w, C):
     x = np.array(w)
@@ -425,8 +427,8 @@ def Z_C(w, C):
 
 
 # Constant phase element
-# w is array of rotational frequencies
-# n is a number between 0 and 1 (Simplifies to an ideal capacitor when n=1)
+# w is array of angular frequencies in rad/s
+# n is a number between 0 and 1
 
 def Z_CPE(w, params):
     x = np.array(w)
@@ -438,10 +440,10 @@ def Z_CPE(w, params):
 
 
 # Warburg impedance
-# w is array of rotational frequencies
-# A is electrode area
-# D_O and D_R are diffusion coefficients for oxidized and reduced species
-# c_O_bulk and c_R_bulk are bulk concentrations for oxidized and reduced species
+# w is array of angular frequencies in rad/s
+# A is electrode area in A/cm^2
+# D_O and D_R are diffusion coefficients for oxidized and reduced species in cm^2/s
+# c_O_bulk and c_R_bulk are bulk concentrations for oxidized and reduced species in mol/cm^3
 
 def Z_W(w, params):
     x = np.array(w)
@@ -459,10 +461,12 @@ def Z_W(w, params):
     Im_Z = -sigma / x ** 0.5 * 1j
     return Re_Z + Im_Z
 
+### Handling User Input of Element Parameters ###
 
 # Input/circuit dictionary
 circuits_dict = {}
 
+#Convert user input parameters into impedance arrays
 el_impedance = []
 # take inputs and calculate Z for element type.
 for i in range(n_elements):
@@ -476,11 +480,8 @@ for i in range(n_elements):
     else:
         zi = Z_W(w_range, params[i])
     el_impedance.append(zi)
-# print(el_impedance)
-# Sample frequency space
-# w = np.logspace(.5,10,100)
 
-# Sample input - two equivalent electrodes and solution resistance
+#Assigns the calculated impedance to specific elements
 if n_elements == 1:
     E1 = el_impedance[0]
     E2 = 0
@@ -505,9 +506,10 @@ else:
     E3 = el_impedance[2]
     E4 = el_impedance[3]
     elements = [E1, E2, E3, E4]
+    
+### Listing Possible Circuit Configurations ###
 
 # Possible circuits for 4 elements
-
 circuits_4 = [[[E1, E2, E3, E4]],
               [[E1, E2, (E3, E4)]],
               [[E1, ([E2, E3], E4)]],
@@ -518,8 +520,6 @@ circuits_4 = [[[E1, E2, E3, E4]],
               [[E1, (E2, E3, E4)]],
               [([E1, E2], E3, E4)],
               [(E1, E2, E3, E4)]]
-
-# Add all to the dictionaries
 for count, array in enumerate(circuits_4):
     circuits_dict["4_" + str(count + 1)] = circuits_4[count]
 
@@ -535,31 +535,19 @@ for count, array in enumerate(circuits_3):
 # Possible inputs for 2 elements
 circuits_2 = [[[E1, E2]],
               [(E1, E2)]]
-
 for count, array in enumerate(circuits_2):
     circuits_dict["2_" + str(count + 1)] = circuits_2[count]
 
-# In[10]:
-
-
 # Possible inputs for 1 element
 circuits_1 = [[E1]]
-
 for count, array in enumerate(circuits_1):
     circuits_dict["1_" + str(count + 1)] = circuits_1[count]
 
-
-# ## Logic Loop Functions for Adding Impedances in Element Array
-
-# In[13]:
-
+### Functions for Calculating Impedance ###
 
 # Function for adding impedances in series
 def add_series_Z(elements):
     return np.sum(elements, axis=0)
-
-
-# In[14]:
 
 
 # Function for adding impedances in parallel
@@ -569,10 +557,7 @@ def add_parallel_Z(elements):
         inv_elements.append(1 / i)
     return 1 / (np.sum(inv_elements, axis=0))
 
-
-# In[15]:
-
-
+#Logic Loop for calculating total impedance
 def calc_Z(input_circuit, config):
     circuit = input_circuit
     # Tuple can't be modified so create a dummy list to store calculations
@@ -596,6 +581,7 @@ def calc_Z(input_circuit, config):
     elif config == "series":
         return add_series_Z(dummy_circuit)
 
+### Plotting the Calculated Impedances ###
 
 # Construct Frequency list from angular frequency list
 f_range = []
@@ -684,6 +670,8 @@ def clear_annot(event):
 fig.canvas.mpl_connect('pick_event', onpick)
 fig.canvas.mpl_connect('button_press_event', clear_annot)
 plt.show()
+
+### Exporting the Data ###
 
 # Convert the numpy data array into a DataFrame and export as a .txt file to the specified location
 
