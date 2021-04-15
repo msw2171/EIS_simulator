@@ -2,12 +2,15 @@ from tkinter import *
 from PIL import Image, ImageTk
 from functools import partial
 
-# pathway to image folder (note:change to your device path, if on Windows change backslashes to forward)
+#import modules for opening and formatting windows and image processing
 
-imgfolder_4e = "F:/Python images for EIS/4element/"
-imgfolder_3e = "F:/Python images for EIS/3element/"
-imgfolder_2e = "F:/Python images for EIS/2element/"
-imgfolder_1e = "F:/Python images for EIS/1element/"
+# pathway to image folder (note:change to your device path, if on Windows change backslashes to forward)
+img_folder_path="F:/Python images for EIS"
+
+imgfolder_4e = img_folder_path + "/4element/"
+imgfolder_3e = img_folder_path + "/3element/"
+imgfolder_2e = img_folder_path + "/2element/"
+imgfolder_1e = img_folder_path + "/1element/"
 
 # define dictionaries for storing images
 
@@ -16,7 +19,7 @@ img_dict_3e = {}
 img_dict_2e = {}
 img_dict_1e = {}
 
-# for loops to fill process/resize images with PIL and fill image Dictionaries
+# for loops to fill process/resize images with PIL and fill individual (1-4) image Dictionaries
 for x in range(1, 11):
     full_img_path = imgfolder_4e + f'pic4_{x}.png'
     img_processed = Image.open(full_img_path)
@@ -53,14 +56,16 @@ for key in img_dict_1e:
 # Establish default string variable for Circuit Choice
 chosen_circuit = "None"
 
+
 # Define function to bring pop up windows to forefront
 def window_tofront(window):
     window.lift()
     window.attributes('-topmost', True)
     window.after_idle(window.attributes, '-topmost', False)
 
-# function to open picture/button window of 4 element choices
 
+# function to open picture/button window of 4 element choices
+# window text and size/frame setup
 def four_element_choice():
     four_window = Tk()
     four_window.geometry("1000x450")
@@ -70,15 +75,17 @@ def four_element_choice():
                        padx=50, pady=50)
     frame.pack()
 
-# Define function for pushing button event (alter chosencircuit variable with arguement and close window)
+    # Define function for pushing button event (alter chosencircuit variable with argument and close window)
     def buttonpush(a):
         global chosen_circuit
         chosen_circuit = a
         four_window.destroy()
 
-# translate values in img_dict into an b_img_dict dictionary using ImageTk.photoimage to be usable in Tkinter
-# generate buttons out of image dictionary, using values as images and keys as buttonpush arguments
-# if/elif statements to format button placement on grid
+    # translate values in img_dict into an b_img_dict dictionary using ImageTk.photoimage to be usable in Tkinter
+    # for loops run through the circuit images in b_img_dict dictionary, creating a button in the window for each image in the dictionary
+    # a partial function (function with predetermined arguement) is assigned to each button, and the dictionary key for the buttons image is given
+    # as the buttonpush argument. This results in each button calling a function that changes chosencircuit to its image key name.
+    # if/elif statements to format button placement on grid
     b_img_dict = {}
     buttonnum = 1
     for key in img_dict_4e:
@@ -105,10 +112,10 @@ def four_element_choice():
             buttontest.grid(column=5, row=buttonnum - 8, padx=10, pady=10)
             buttonnum = buttonnum + 1
 
-# call window to front, mainloop window (to keep it open)
+    # call window to front, mainloop window (to keep it open)
     window_tofront(four_window)
     four_window.mainloop()
-# establish the chosen circuit as the return value for the window calling function
+    # establish the chosen circuit as the return value for the window calling function
     return chosen_circuit
 
 
@@ -210,7 +217,7 @@ print("Ciruit element codes: ")
 print("R: Resistance")
 print("C: Capacitance")
 print("CPE: Constant Phase Element")
-print("W: Warburg impedance")
+print("W: Warburg Impedance")
 print(30 * '-')
 ###########################
 ## Robust error handling ##
@@ -271,16 +278,17 @@ def open_reference_window():
 
     window_tofront(reference_window)
 
-# continue to update window (showing window onscreen) until user finishes inputs
+    # continue to update window (showing window onscreen) until user finishes inputs
     while not user_inputs_done:
         reference_window.update()
-
+    # destroy tkinter window so that Tkinter does not continue to reference this window's data later in the program
     reference_window.destroy()
 
 
 # Import threading, create separate thread for pulling up circuit reference window, and start thread
 # This allows user input code to continue while the window code runs and loops
 import threading
+
 thread_1 = threading.Thread(target=open_reference_window)
 thread_1.start()
 
@@ -295,14 +303,16 @@ thread_1.start()
 element_types = []
 params = []
 
-def check_neg_error(a):  #function designed to produce valueerror if given a negative or 0 as an argument
-    if a <= 0 :
-        cause_error=int("str")
+
+def check_neg_error(a):  # function designed to produce valueerror if given a negative or 0 as an argument
+    if a <= 0:
+        cause_error = int("str")
         pass
     else:
         pass
 
-# for loop through element number
+
+# for loop through element number, this loop addresses and collects parameters for each element 1-4 one at a time
 for i in range(1, n_elements + 1):
     valid = 0
     while not valid:  # ensure user input is only allowed element types R, C, CPE, or W
@@ -314,7 +324,7 @@ for i in range(1, n_elements + 1):
                 ith_element) + " is not a valid input. \nPlease choose from R. Resistor, C. Capacitance, CPE. Constant Phase Element, W. Warburg Impedance")
     element_types.append(ith_element)
     valid_values = 0
-    while not valid_values:
+    while not valid_values: ## while loop prompts user for values dependant on element identity, checks those values for errors, and if valid appends them to a list of parameters and breaks loop
         try:
             if ith_element == 'R':
                 r = float(input("Please specify the resitance in Ohms : "))
@@ -337,11 +347,13 @@ for i in range(1, n_elements + 1):
                         print(str(n) + " is not between 0 and 1.")
                 params.append([q, n])
             else:
-                choose_sigma=False
-                choose_param=False
-                print("Would you like to provide the general Warburg coefficent \u03C3 or more specific parameters (ie. species concentrations, diffusion coefficients etc.)?")
+                choose_sigma = False
+                choose_param = False
+                print(
+                    "Would you like to provide the general Warburg coefficent \u03C3 or more specific parameters (ie. species concentrations, diffusion coefficients etc.)?")
+                ## determine whether user wants to enter warburg coefficient or individual concentration/diffusion parameters
                 while not choose_param and not choose_sigma:
-                    sigma_or_param=str(input("Enter \'sigma\' or \'parameters\' : "))
+                    sigma_or_param = str(input("Enter \'sigma\' or \'parameters\' : "))
                     if sigma_or_param == "sigma":
                         choose_sigma = True
                     elif sigma_or_param == "parameters":
@@ -350,7 +362,8 @@ for i in range(1, n_elements + 1):
                         print("Please enter one of the provided responses.")
 
                 if choose_sigma:
-                    sigma_val=float(input("Please specify the value of the Warburg coefficent \u03C3 in Ohms/\u221asec."))
+                    sigma_val = float(
+                        input("Please specify the value of the Warburg coefficient \u03C3 in Ohms/\u221asec : "))
                     check_neg_error(sigma_val)
                     params.append([sigma_val])
                 else:
@@ -363,10 +376,12 @@ for i in range(1, n_elements + 1):
                     D_R = float(input("Please specify the diffusion coefficient of the reduced species in cm^2/s : "))
                     check_neg_error(D_R)
 
-                    c_O_bulk = float(input("Please specify the bulk concentration of oxidized species in mol/L : "))/1000
+                    c_O_bulk = float(
+                        input("Please specify the bulk concentration of oxidized species in mol/L : ")) / 1000
                     check_neg_error(c_O_bulk)
 
-                    c_R_bulk = float(input("Please specify the bulk concentration of reduced species in mol/L : "))/1000
+                    c_R_bulk = float(
+                        input("Please specify the bulk concentration of reduced species in mol/L : ")) / 1000
                     check_neg_error(c_R_bulk)
 
                     n_el = int(input("Please specify the number of electrons in the redox reaction: "))
@@ -374,7 +389,7 @@ for i in range(1, n_elements + 1):
 
                     params.append([A, D_O, D_R, c_O_bulk, c_R_bulk, n_el])
             valid_values = 1
-        except ValueError:
+        except ValueError:  #if Valueerror occurs, code skips changing the validvalues variable to one, prints invalid value statement, and restarts the current while loop
             print("You have entered an invalid value. Please ensure entered values are positive and numerical.")
 
 lo_hi = 0  # check that the frequency range is correctly specified, low to high, positive, and numerical
@@ -390,15 +405,15 @@ while not nonstr_freq:
             if high_f > low_f:
                 lo_hi = 1
             else:
-                print("Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
+                print(
+                    "Your upper frequency is lower than your lowest frequency, please ensure a proper frequency range.")
             if low_f > 0 and high_f > 0:
                 pos_freq = 1
             else:
                 print("Please ensure a proper frequency range with positive values above 0 Hz.")
-        nonstr_freq=1
+        nonstr_freq = 1
     except ValueError:
         print("Please ensure you have entered positive numerical values for your frequency range.")
-
 
 # Alter variable to indicate user is done with data input to close reference picture window
 user_inputs_done = True
@@ -411,7 +426,6 @@ w_range = []
 for w in w_input:
     x = round(2 * np.pi * w, 4)
     w_range.append(x)
-
 
 print(element_types)
 print(params)
@@ -464,7 +478,7 @@ def Z_CPE(w, params):
 
 def Z_W(w, params):
     x = np.array(w)
-    if len(params)==6:
+    if len(params) == 6:
         A = params[0]
         D_O = params[1]
         D_R = params[2]
@@ -483,12 +497,13 @@ def Z_W(w, params):
         Im_Z = -params[0] / x ** 0.5 * 1j
         return Re_Z + Im_Z
 
+
 ### Handling User Input of Element Parameters ###
 
 # Input/circuit dictionary
 circuits_dict = {}
 
-#Convert user input parameters into impedance arrays
+# Convert user input parameters into impedance arrays
 el_impedance = []
 # take inputs and calculate Z for element type.
 for i in range(n_elements):
@@ -503,7 +518,7 @@ for i in range(n_elements):
         zi = Z_W(w_range, params[i])
     el_impedance.append(zi)
 
-#Assigns the calculated impedance to specific elements
+# Assigns the calculated impedance to specific elements
 if n_elements == 1:
     E1 = el_impedance[0]
     E2 = 0
@@ -528,7 +543,7 @@ else:
     E3 = el_impedance[2]
     E4 = el_impedance[3]
     elements = [E1, E2, E3, E4]
-    
+
 ### Listing Possible Circuit Configurations ###
 
 # Possible circuits for 4 elements
@@ -565,6 +580,7 @@ circuits_1 = [[E1]]
 for count, array in enumerate(circuits_1):
     circuits_dict["1_" + str(count + 1)] = circuits_1[count]
 
+
 ### Functions for Calculating Impedance ###
 
 # Function for adding impedances in series
@@ -579,7 +595,8 @@ def add_parallel_Z(elements):
         inv_elements.append(1 / i)
     return 1 / (np.sum(inv_elements, axis=0))
 
-#Logic Loop for calculating total impedance
+
+# Logic Loop for calculating total impedance
 def calc_Z(input_circuit, config):
     circuit = input_circuit
     # Tuple can't be modified so create a dummy list to store calculations
@@ -603,6 +620,7 @@ def calc_Z(input_circuit, config):
     elif config == "series":
         return add_series_Z(dummy_circuit)
 
+
 ### Plotting the Calculated Impedances ###
 
 # Construct Frequency list from angular frequency list
@@ -620,20 +638,20 @@ f_array = np.array(f_range)
 circuit = circuits_dict[user_choice_circuits_key]
 impedance_array = calc_Z(circuit, "series")
 x = impedance_array.real
-y = -1*impedance_array.imag
+y = -1 * impedance_array.imag
 
 fig, ax = plt.subplots()
-ax.set_title('Simulated EIS Plot')
+ax.set_title('Simulated Nyquist Plot')
 ax.set_ylabel('-Z\" (Ohms)')
 ax.set_xlabel('Z\' (Ohms)')
 
 # if Z imaginary is 0 at all points, The resistance is independant of frequency, all plotted points are the same Z" and Z'
 # The plot should be given as scatter instead of line such that the singular point is visible on the graph
-
-Zimag_allzero=True
+# picker property for points on the plot is activated with 5 pixel radius to allow artist elements (points) to be selected on click
+Zimag_allzero = True
 for _ in range(len(y)):
     if y[_] != 0:
-        Zimag_allzero=False
+        Zimag_allzero = False
 if Zimag_allzero:
     y = np.zeros(len(y))
     line = ax.plot(x, y, "o", picker=True, pickradius=5)
@@ -648,32 +666,34 @@ annot = ax.annotate("", xy=(0, 0), xytext=(-40, 40), textcoords="offset points",
                     bbox=dict(boxstyle='round4', fc='linen', ec='k', lw=1),
                     arrowprops=dict(arrowstyle='-|>'))
 
+# hide annotation until made visible by click event
 annot.set_visible(False)
 
 
 # define Pick point/annotate graph function
 def onpick(event):
-    global w_array
+    global w_array ## use global values for the frequency lists
     global f_array
     thisline = event.artist
-    xdata = thisline.get_xdata()
+    xdata = thisline.get_xdata()  ##get data x,y from plot
     ydata = thisline.get_ydata()
-    ind = event.ind
+    ind = event.ind  ## click event establishes index of plotted elements
     xpoints = xdata[ind]
     ypoints = ydata[ind]
     wpoints = w_array[ind]
-    fpoints = f_array[ind]
+    fpoints = f_array[ind]  ##index returned from click used to select corressponding x,y, frequency data (there could be multiple points selected from click)
     first_xpoint = xpoints[0]
     first_ypoint = ypoints[0]
     first_wpoint = wpoints[0]
-    first_fpoint = fpoints[0]
+    first_fpoint = fpoints[0]  ##use only the first index returned with each click to annotate the plot, format annotation text
     annot.xy = (first_xpoint, first_ypoint)
     text = " Z\'={:.4g}\n-Z\"={:.4g}\n \u03c9 ={:.4g}\n f  ={:.4g}".format(first_xpoint, first_ypoint, first_wpoint,
-                                                                   first_fpoint)
-    annot.set_text(text)
+                                                                           first_fpoint)
+    annot.set_text(text) ## set text for annotation, make annotation visible, and update plot visual
     annot.set_visible(True)
     fig.canvas.draw()
 
+    ## print data to console for additional viewing
     console_print_text = ' Z\' = {:.4g} Ohms\n-Z\" = {:.4g} Ohms\nAngular Frequency \u03c9 = {:.4g} Hz\nFrequency f = {:.4g} Hz'.format(
         first_xpoint, first_ypoint, first_wpoint, first_fpoint)
 
@@ -681,11 +701,13 @@ def onpick(event):
     print(console_print_text)
     print('-------------------------------')
 
+
 # define a buttonpress event to clear annotation if outside of graph axes
 def clear_annot(event):
     if event.inaxes is None:
         annot.set_visible(False)
         event.canvas.draw()
+
 
 # link defined events to plotting canvas and plot
 
@@ -703,25 +725,29 @@ import tkinter.font as font
 Z_data = np.column_stack((x, y, w_array, f_array))
 df = pd.DataFrame(Z_data, columns=["Z' (ohms)", "-Z'' (ohms)", "Angular frequency (Hz)", "frequency (Hz)"])
 
+#define savefile function for save button. filedialog allows user to set save location and name
 def savefile():
     global df
-    file_path=filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text file", ".txt")])
+    file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text file", ".txt")])
     if file_path == "":
         return
     else:
         df.to_csv(file_path)
         print("File Saved")
+
+#close window function
 def push_close():
     save_window.destroy()
 
+# create and format popup save window, assign savefile and close functions to respective buttons
 save_window = Tk()
 save_window.geometry("500x250")
 save_window.title("Save EIS Plot")
 frame = LabelFrame(save_window, text="Would you like to save your EIS plot data to a text file?", padx=20, pady=20)
 frame.pack()
-save_button=Button(frame, text="Save", font=font.Font(size=20), command=savefile)
+save_button = Button(frame, text="Save", font=font.Font(size=20), command=savefile)
 save_button.pack(padx=10, pady=10)
-close_button=Button(frame, text="Close", font=font.Font(size=20), command=push_close)
+close_button = Button(frame, text="Close", font=font.Font(size=20), command=push_close)
 close_button.pack(padx=10, pady=10)
 
 window_tofront(save_window)
