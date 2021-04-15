@@ -248,9 +248,12 @@ user_choice_img_key = determine_circuit_config(n_elements)
 
 user_choice_circuits_key = user_choice_img_key.lstrip("img")
 
-# Use PiL to resize users chosen circuit image for reference display
+# Use PIL to resize users chosen circuit image for reference display # quit program if KeyError: User closed image selection window without picking circuit
 
-user_choice_img = master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
+try:
+    user_choice_img = master_img_dict[user_choice_img_key].resize((290, 250), Image.ANTIALIAS)
+except KeyError:
+    quit()
 
 # define variable to determine when user is done with data inputs to close reference picture window
 user_inputs_done = False
