@@ -1,14 +1,13 @@
 # EIS_simulator
 
+Welcome to EIS simulator!
+
 Package dependencies:
-Functools
 tkinter
 matplotlib
 numpy
 pandas
 functools
-
-Welcome to EIS simulator. 
 
 To run, simply run the file EIS_Simulator_final.py
 NOTE: Within the script on line 9 there is a variable 'img_folder_path' to designate the path for the circuit configuration diagrams contained in the folder /Python images for EIS/.
