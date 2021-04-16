@@ -1,5 +1,12 @@
 # EIS_simulator
 
+Package dependencies:
+Functools
+tkinter
+matplotlib
+numpy
+pandas
+functools
 
 Welcome to EIS simulator. 
 
