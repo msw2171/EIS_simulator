@@ -3,6 +3,7 @@
 Welcome to EIS simulator!
 
 Package dependencies:
+cmath
 tkinter
 matplotlib
 numpy
