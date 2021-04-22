@@ -91,7 +91,7 @@ for i in range(1, n_elements + 1):
     while not valid_values: ## while loop prompts user for values dependant on element identity, checks those values for errors, and if valid appends them to a list of parameters and breaks loop
         try:
             if ith_element == 'R':
-                r = float(input("Please specify the resitance in Ohms : "))
+                r = float(input("Please specify the resistance in Ohms : "))
                 check_neg_error(r)
                 params.append(r)
             elif ith_element == 'C':
@@ -216,13 +216,14 @@ def verify_configuration(circuit_string):
 
 valid = False
 
+print("When entering a circuit configuration, please follow the following formatting guidelines:" )
+print("- Use E1, E2, E3, and E4 to represent the corresponding elements")
+print("- Use + to delimit elements or groups of elements in series. E.g E1+E2 shows that element 1 and 2 are in series")
+print("- Use / to delimit elements or groups of elements in parallel. E.g. (E1/E2) shows that element 1 and 2 are in parallel")
+print("- Enclose all elements in parallel in parentheses. E.g. (E1/E2/E3) or (E1+E2/E3)")
+print("- Do not use parentheses to enclose elements in series. E.g. ((E1+E2)/E3) is an invalid input")
+
 while not valid:
-    print("When entering a circuit configuration, please follow the following formatting guidelines:" )
-    print("- Use E1, E2, E3, and E4 to represent the corresponding elements")
-    print("- Use + to delimit elements or groups of elements in series. E.g E1+E2 shows that element 1 and 2 are in series")
-    print("- Use / to delimit elements or groups of elements in parallel. E.g. (E1/E2) shows that element 1 and 2 are in parallel")
-    print("- Enclose all elements in parallel in parentheses. E.g. (E1/E2/E3) or (E1+E2/E3)")
-    print("- Do not use parentheses to enclose elements in series. E.g. ((E1+E2)/E3) is an invalid input")
     circuit_string = input('What is the circuit configuration you would like to simulate? ')
     circuit_string = circuit_string.replace(" ","")
     valid = verify_configuration(circuit_string)
